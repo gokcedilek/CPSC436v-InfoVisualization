@@ -14,9 +14,36 @@ d3.csv('data/data_removed_columns.csv')
     });
   });
 
-const symbolMap = new SymbolMap();
-const chord = new ChordDiagram();
-const bubble = new BubbleDiagram();
+const symbolMap = new SymbolMap({
+    parentElement: '#symbol-map'
+}, data);
+const chord = new ChordDiagram({
+    parentElement: '#chord-diagram'
+}, data);
+const bubble = new BubbleDiagram({
+    parentElement: '#bubble-diagram'
+}, data);
+
+d3.select('#country-selector').on('change', function() {
+    let selected = d3.select(this).property('value');
+    let filtered = data
+
+    if (selected) {
+        if (selected != "All"){
+            filtered = data.filter((d) => d['COUNTRY'] == selected);
+        }
+      
+        symbolMap.data = filtered;
+        symbolMap.updateVis();
+
+        chord.data = filtered;
+        chord.updateVis();
+        
+        bubble.data = filtered;
+        bubble.updateVis();
+    
+    }
+  });
 
  })
  .catch(error => console.error(error));

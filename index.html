@@ -5,6 +5,33 @@
     <link rel="shortcut icon" href="#" />
 </head>
 <body>
+    <h1>Political Violence in the Middle East</h1>
+
+    Filter Countries: 
+    <select id="country-selector">
+        <option selected="selected" value="All">All Countries</option>
+        <option value="Bahrain">Bahrain</option>
+        <option value="Iran">Iran</option>
+        <option value="Iraq">Iraq</option>
+        <option value="Israel">Israel</option>
+        <option value="Kuwait">Kuwait</option>
+        <option value="Lebanon">Lebanon</option>
+        <option value="Oman">Oman</option>
+        <option value="Palestine">Palestine</option>
+        <option value="Qatar">Qatar</option>
+        <option value="Saudi Arabia">Saudi Arabia</option>
+        <option value="Syria">Syria</option>
+        <option value="Turkey">Turkey</option>
+        <option value="United Arab Emirates">United Arab Emirates</option>
+        <option value="Yemen">Yemen</option>
+    </select>
+    
+    <br>
+    
+    <svg id="symbol-map"></svg>
+    <svg id="chord-diagram"></svg>
+    <svg id="bubble-diagram"></svg>
+
     <script src="js/d3.v6.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/symbol.js"></script>
