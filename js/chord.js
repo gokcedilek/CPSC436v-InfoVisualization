@@ -80,34 +80,17 @@ class ChordDiagram {
   updateVis() {
     let vis = this;
     // Prepare data and scales
-    // derive the ACTOR_TYPE columns
-    // vis.data.map((row, i) => {
-    //   if (i == 0) {
-    //     console.log(row);
-    //     const actorType1 = vis.interCodeMap[row.INTER1];
-    //     const actorType2 = vis.interCodeMap[row.INTER2];
-    //     const newRow = {
-    //       ...row,
-    //       ACTOR_TYPE_1: actorType1,
-    //       ACTOR_TYPE_2: actorType2,
-    //     };
-    //     console.log(newRow);
-    //     return newRow;
-    //   }
-    // });
 
     let matrix = new Array();
-    for (let row = 0; row <= 8; row++) {
+    for (let row = 0; row < 8; row++) {
       matrix[row] = new Array();
-      for (let col = 0; col <= 8; col++) {
+      for (let col = 0; col < 8; col++) {
         const events = vis.data.filter(
-          (data) => data.INTER1 == row && data.INTER2 == col
-          //  || (data.INTER1 == col && data.INTER2 == row)
+          (data) => data.INTER1 == row + 1 && data.INTER2 == col + 1
         );
         matrix[row][col] = events.length;
       }
     }
-    console.log(matrix);
     vis.matrix = matrix;
 
     vis.renderVis();
@@ -129,21 +112,29 @@ class ChordDiagram {
       .append('path')
       .attr('fill', (_, i) => vis.chordColors[i])
       .attr('stroke', 'black')
-      .attr('d', d3.arc().innerRadius(200).outerRadius(210));
+      .attr('d', d3.arc().innerRadius(200).outerRadius(210))
+      .attr('id', (_, i) => 'chord-node-id' + i);
 
-    // chordNodeGroup.append('title').text((_, i) => vis.interCodeMap[i]);
-    // chordNodeGroup
-    //   .append('text')
-    //   .attr('dy', -3)
-    //   .append('textPath')
-    //   .attr('xlink:href', textId.href)
-    //   .attr('startOffset', (d) => d.startAngle * outerRadius)
-    //   .text((_, i) => vis.interCodeMap[i]);
+    chordNodeGroup
+      .append('text')
+      .attr('dx', 5)
+      .attr('dy', -10)
+      .attr('textLength', 40)
+      .attr('spacing', 'auto')
+      .append('textPath')
+      .attr('textLength', 40)
+      .attr('xlink:href', function (d) {
+        return '#chord-node-id' + d.index;
+      })
+      // .attr('transform', )
+      .text(function (d) {
+        return 'Arc ' + d.index;
+      });
 
     chordNodes
       .on('mouseover', function (event, d) {
         const eventsOfActor = vis.data.filter(
-          (data) => data.INTER1 == d.index || data.INTER2 == d.index
+          (data) => data.INTER1 == d.index + 1 || data.INTER2 == d.index + 1
         );
         eventsOfActor.sort((a, b) => a.YEAR - b.YEAR);
 
@@ -157,12 +148,11 @@ class ChordDiagram {
           year,
           fatalities,
         }));
-        console.log('fatalities per year after: ', fatalitiesPerYear);
 
         vis.barChartTooltip.show(d, this);
         const containerWidth = 300;
         const containerHeight = 250;
-        const margin = { top: 20, right: 20, bottom: 20, left: 50 };
+        const margin = { top: 20, right: 30, bottom: 20, left: 50 };
         const width = containerWidth - margin.left - margin.right;
         const height = containerHeight - margin.top - margin.bottom;
         const tooltipSVG = d3
@@ -174,6 +164,23 @@ class ChordDiagram {
         const tooltipSVGChart = tooltipSVG
           .append('g')
           .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        tooltipSVG
+          .append('text')
+          .attr('class', 'axis-title')
+          .attr('x', 4)
+          .attr('y', 4)
+          .attr('dy', '.71em')
+          .text('Fatalities (sum)');
+
+        tooltipSVGChart
+          .append('text')
+          .attr('class', 'axis-title')
+          .attr('y', height - 10)
+          .attr('x', width + 30)
+          .attr('dy', '.71em')
+          .style('text-anchor', 'end')
+          .text('Year');
 
         const minYear = fatalitiesPerYear[0].year;
         const maxYear = fatalitiesPerYear[fatalitiesPerYear.length - 1].year;
