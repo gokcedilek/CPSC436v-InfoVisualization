@@ -8,7 +8,7 @@ const demonstration_events = ['Protests', 'Riots']
 const non_violent_actions = ['Strategic developments']
 // d3.csv('data/data_removed_columns.csv')
 // d3.csv('data/data_bubble.csv')
-d3.csv('data/data_removed_columns.csv')
+d3.csv('data/data_removed_columns_sm.csv')
 .then(data => {
     // Convert columns to numerical values
     data.forEach(d => {

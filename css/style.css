@@ -11,3 +11,59 @@
     min-width: 120px;
     color: #333;
 }
+
+/* Bubble diagram */
+.info-source {
+    display: flex;
+}
+.legend {
+    margin: 0px 0;
+    list-style: none;
+    padding: 0;
+    width: 1000px;
+}
+ul li{
+    float: left;
+    width: 70%;
+}
+ul{
+    list-style-type: disc;
+    -webkit-columns: 8;
+    -moz-columns: 8;
+    columns: 8;
+    list-style-position: inside;
+}
+.legend-btn {
+    display: inline-block;
+    margin: 0;
+    transition: all ease-in-out 200ms;
+    border-color: #333333;
+}
+.legend-symbol {
+    width: 12px;
+    height: 12px;
+    margin-right: 3px;
+    display: inline-block;
+    border-color: #333333;
+}
+.legend-btn[source="international"] .legend-symbol {
+    background: #FFD93D;
+}
+.legend-btn[source="national"] .legend-symbol {
+    background: #4350fa;
+}
+.legend-btn[source="subnational"] .legend-symbol {
+    background: #3D9970;
+}
+.legend-btn[source="regional"] .legend-symbol {
+    background: #FF6B6B;
+}
+.legend-btn[source="localPartner"] .legend-symbol {
+    background: #8BDB81;
+}
+.legend-btn[source="newMedia"] .legend-symbol {
+    background: #c300eb;
+}
+.legend-btn[source="other"] .legend-symbol {
+    background: #AAAAAA;
+}

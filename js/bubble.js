@@ -12,7 +12,7 @@ class BubbleDiagram {
       generalEventGroup: _config.parentElement.split("-")[2],
       className: 'bubble-diagram-' +  _config.generalEventGroup,
       containerWidth: 333,
-      containerHeight: 500,
+      containerHeight: 333,
       margin: {top: 30, right: 30, bottom: 30, left: 30},
       tooltipPadding: 10,
       maxSize: 0,
@@ -34,8 +34,7 @@ class BubbleDiagram {
         vis.svg = d3.select(vis.config.parentElement)
             .attr('width', vis.config.containerWidth)
             .attr('height', vis.config.containerHeight)
-            .attr('class', vis.config.className)
-            .attr("style", "outline: thin solid grey;");
+            .attr('class', vis.config.className);
 
         // Append group element that will contain our actual chart
         // and position it according to the given margin config
@@ -44,9 +43,6 @@ class BubbleDiagram {
 
         // location to centre the bubbles
         vis.centre = { x: vis.width/2, y: vis.height/2 };
-
-        // these will be set in createNodes and chart functions
-        vis.bubbles = null;
 
         // use max size in the data as the max in the scale's domain
         // note we have to ensure that size is a number
@@ -61,8 +57,8 @@ class BubbleDiagram {
 
         // set up colour scale
         vis.fillColour = d3.scaleOrdinal()
-            .domain(["National", "Regional", "International", "Subnational","New Media", "Other"])
-            .range(["#FF6B6B", "#FFD93D", "#39CCCC", "#3D9970", "#712B75","#AAAAAA"]);
+            .domain(["Regional", "International", "National", "Subnational","New media", "Local partner", "Other"])
+            .range(["#FF6B6B", "#FFD93D", "#4350fa", "#3D9970", "#c300eb","#8BDB81","#AAAAAA"]);
 
         // Append axis title
         vis.svg.append('text')
@@ -71,7 +67,7 @@ class BubbleDiagram {
             .attr('y', 10)
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
-            .text(this.config.generalEventGroup.replace('_',' '));
+            .text(this.config.generalEventGroup.replace(/_/g,' '));
 
         this.updateVis()
 
@@ -161,7 +157,8 @@ class BubbleDiagram {
                     .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')
                     .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                     .html(`
-                    <p><b>${d.name}</b></p>
+                    <p>Information source: <b>${d.name}</b></p>
+                    <p>Number of events: <b>${d.size}</b></p>
                     `);
             })
             .on('mouseleave', () => {
