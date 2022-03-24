@@ -20,6 +20,7 @@ class BubbleDiagram {
     }
     this.fullData = _data;
     this.data = _data.filter((d) => d['GENERAL_EVENT_GROUP'] == this.config.generalEventGroup);
+    // this.dispatcher = _dispatcher
     this.initVis();
   }
   
@@ -128,6 +129,16 @@ class BubbleDiagram {
                 .attr('fill', d => this.fillColour(d.name))
                 .attr('cx', d => d.x)
                 .attr('cy', d => d.y)
+                .on('click', function(event, d) {
+                    const isActive = d3.select(this).classed('active');
+                    d3.select(this).classed('active', !isActive)
+                        .style('stroke-width', 3 );
+                    // Get the names of all active/filtered categories
+                    const selectedInfoSourceEvents = vis.svg.selectAll('.bubble.active').data().map(k => k.key);
+                    // Call dispatcher and pass the event name, D3 event object,
+                    // and our custom event data (selected category names)
+                    // vis.dispatcher.call('filteredInfoSourceEvent', event, selectedInfoSourceEvents);
+                })
 
         // set simulation's nodes to our newly created nodes array
         // simulation starts running automatically once nodes are set

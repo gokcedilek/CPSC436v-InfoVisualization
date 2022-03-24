@@ -6,8 +6,10 @@
 const violent_events = ['Battles', 'Explosions/Remote violence', 'Violence against civilians']
 const demonstration_events = ['Protests', 'Riots']
 const non_violent_actions = ['Strategic developments']
+
+const dispatcher = d3.dispatch('filteredInfoSourceEvent');
+
 // d3.csv('data/data_removed_columns.csv')
-// d3.csv('data/data_bubble.csv')
 d3.csv('data/data_removed_columns_sm.csv')
 .then(data => {
     // Convert columns to numerical values
@@ -88,3 +90,12 @@ d3.select('#country-selector').on('change', function() {
 
  })
  .catch(error => console.error(error));
+
+dispatcher.on('filteredInfoSourceEvent', selectedInfoSourceEvents => {
+    if (selectedInfoSourceEvents.length == 0) {
+        chord.data = data;
+    } else {
+        chord.data = data.filter(d => selectedInfoSourceEvents.includes(d.GENERAL_EVENT_GROUP));
+    }
+    chord.updateVis();
+});

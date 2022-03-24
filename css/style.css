@@ -16,6 +16,10 @@
 .info-source {
     display: flex;
 }
+.bubble.active {
+    stroke: #1C1427;
+    stroke-width: 4px;
+}
 .legend {
     margin: 0px 0;
     list-style: none;
