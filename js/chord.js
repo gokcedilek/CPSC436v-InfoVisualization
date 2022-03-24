@@ -4,7 +4,7 @@ class ChordDiagram {
    * @param {Object}
    * @param {Array}
    */
-  constructor(_config, _data) {
+  constructor(_config, _data, _dispatcher) {
     this.config = {
       parentElement: _config.parentElement,
       containerWidth: 1000,
@@ -14,6 +14,8 @@ class ChordDiagram {
     };
     this.data = _data;
     // this.data = this.data.slice(0, 10000);
+    this.selectedActor = 0;
+    this.dispatcher = _dispatcher;
     this.interCodeMap = {
       0: 'Undefined',
       1: 'State Forces',
@@ -30,13 +32,13 @@ class ChordDiagram {
     this.chordColors = [
       '#fc928b',
       '#07a822',
-      '#41b2ba',
+      // '#41b2ba',
       '#5276f7',
       '#ae94d4',
       '#dbaa09',
-      '#48a4f0',
       '#b0b305',
       '#f3b6fa',
+      '#48a4f0',
     ];
     this.initVis();
   }
@@ -101,10 +103,28 @@ class ChordDiagram {
     let vis = this;
     const chordData = d3.chord().padAngle(0.05)(vis.matrix);
 
+    const textId = { id: 0, href: new URL('#0', window.location) };
+    vis.chart
+      .append('path')
+      .attr('id', textId.id)
+      .attr('fill', 'none')
+      .attr(
+        'd',
+        d3.arc()({ outerRadius: 210, startAngle: 0, endAngle: 2 * Math.PI })
+      );
+
+    // const filteredGroupData =
+    //   vis.selectedActor === 0
+    //     ? chordData.groups
+    //     : chordData.groups.filter((d) => d.index + 1 === vis.selectedActor);
+    // console.log('filtered groups: ', filteredGroupData);
+
     const chordNodeGroup = vis.chart
-      .append('g')
+      // .append('g')
+      // .join('g')
       .selectAll('.chord-node')
       .data(chordData.groups)
+      // .data(filteredGroupData)
       .join('g')
       .attr('class', 'chord-node');
 
@@ -112,23 +132,43 @@ class ChordDiagram {
       .append('path')
       .attr('fill', (_, i) => vis.chordColors[i])
       .attr('stroke', 'black')
-      .attr('d', d3.arc().innerRadius(200).outerRadius(210))
+      .attr('d', (_, i) => {
+        const startAngle = i * 45;
+        const endAngle = (i + 1) * 45;
+        console.log(`i: ${i}, start: ${startAngle}, end: ${endAngle}`);
+        return d3
+          .arc()
+          .innerRadius(200)
+          .outerRadius(210)
+          .startAngle((i) => i * 45)
+          .endAngle((i) => (i + 1) * 45);
+      })
       .attr('id', (_, i) => 'chord-node-id' + i);
 
     chordNodeGroup
       .append('text')
-      .attr('dx', 5)
-      .attr('dy', -10)
-      .attr('textLength', 40)
-      .attr('spacing', 'auto')
-      .append('textPath')
-      .attr('textLength', 40)
-      .attr('xlink:href', function (d) {
-        return '#chord-node-id' + d.index;
+      // .attr('dx', 3)
+      .attr('dy', (d, i) => {
+        if (d.value < 700) {
+          if (i % 2 == 0) {
+            return -20;
+          } else {
+            return -5;
+          }
+        } else {
+          return -5;
+        }
       })
-      // .attr('transform', )
+      .attr('font-size', '0.65em')
+      .append('textPath')
+      // .attr('textLength', 40)
+      .attr('xlink:href', function (d) {
+        // return '#chord-node-id' + d.index;
+        return textId.href;
+      })
+      .attr('startOffset', (d) => d.startAngle * 210)
       .text(function (d) {
-        return 'Arc ' + d.index;
+        return vis.interCodeMap[d.index + 1];
       });
 
     chordNodes
@@ -187,7 +227,6 @@ class ChordDiagram {
         const maxFatalities = d3.max(fatalitiesPerYear, (d) => d.fatalities);
 
         const numYears = maxYear - minYear + 1;
-        console.log(minYear, maxYear, maxFatalities);
 
         const yAxisScale = d3
           .scaleLinear()
@@ -234,17 +273,40 @@ class ChordDiagram {
       })
       .on('mouseleave', function () {
         vis.barChartTooltip.hide();
+      })
+      .on('click', function (event, d) {
+        const isSelected = vis.selectedActor !== 0;
+        console.log('is selected: ', isSelected);
+        if (isSelected) {
+          vis.selectedActor = 0;
+          vis.updateVis();
+        } else {
+          vis.selectedActor = d.index + 1;
+          vis.updateVis();
+        }
       });
 
+    console.log('arcs: ', chordData);
+    console.log('selected: ', vis.selectedActor);
+
+    const filteredChordData =
+      vis.selectedActor === 0
+        ? chordData
+        : chordData.filter((d) => d.source.index + 1 === vis.selectedActor);
+    console.log('filtered arcs: ', filteredChordData);
+
     const chordArcs = vis.chart
-      .append('g')
+      // .append('g')
+      // .join('g')
       .selectAll('.chord-arc')
-      .data(chordData)
+      // .data(chordData)
+      .data(filteredChordData, (d) => d.source.index)
       .join('path')
       .attr('class', 'chord-arc')
       .attr('d', d3.ribbon().radius(200))
       .attr('fill', (d) => vis.chordColors[d.source.index])
-      .attr('stroke', 'black');
+      .attr('stroke', 'black')
+      .classed('selected', (d) => d.source.index + 1 === vis.selectedActor);
 
     // chordArcs
     //   .on('mouseover', function (event, d) {

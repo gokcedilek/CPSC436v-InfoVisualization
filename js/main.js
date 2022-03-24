@@ -2,6 +2,9 @@
  * Load data from CSV file asynchronously and visualize it
  */
 // d3.csv('data/data_removed_columns.csv')
+
+const dispatcher = d3.dispatch('filterByActor', 'filterByEventType');
+
 d3.csv('data/data_inter_fatalities.csv')
   .then((data) => {
     // Convert columns to numerical values
@@ -64,3 +67,5 @@ d3.csv('data/data_inter_fatalities.csv')
     });
   })
   .catch((error) => console.error(error));
+
+dispatcher.on('filterByActor', () => {});
