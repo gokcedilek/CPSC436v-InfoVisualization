@@ -1,3 +1,31 @@
+body {
+    background: #fafcff;
+  }
+  
+  .geo-path {
+    fill: lightskyblue;
+  }
+  .geo-boundary-path {
+    stroke: #fff;
+    fill: none;
+    stroke-width: 0.4;
+  }
+  .geo-symbol {
+    fill: #3e5e79;
+    fill-opacity: 0.5;
+  }
+  .geo-symbol:hover {
+    fill-opacity: 1;
+  }
+  .geo-label {
+    font-size: .7rem;
+    font-weight: 500;
+  }
+  .geo-visitor-label {
+    font-weight: 700;
+    font-size: .75rem;
+  }
+  
 /* Tooltip */
 #tooltip {
     position: absolute;

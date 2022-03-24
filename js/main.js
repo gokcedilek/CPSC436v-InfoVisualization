@@ -10,18 +10,21 @@ const non_violent_actions = ['Strategic developments']
 const dispatcher = d3.dispatch('filteredInfoSourceEvent');
 
 // d3.csv('data/data_removed_columns.csv')
-d3.csv('data/data_removed_columns_sm.csv')
-.then(data => {
+Promise.all([
+    d3.csv('data/data_removed_columns_sm.csv'),
+    d3.json('data/world-110m.json')
+  ]).then(data => {
     // Convert columns to numerical values
-    data.forEach(d => {
+    data[0].forEach(d => {
         Object.keys(d).forEach(attr => {
             if (attr == 'YEAR' || attr == 'INTER1' || attr == 'INTER2' || attr == 'INTERACTION' || 
             attr == 'LATITUDE' || attr == 'LONGITUDE' || attr == 'FATALITIES' || attr == 'TIMESTAMP'){
                 d[attr] = +d[attr]; 
             }
+        })
     });
     // Make column value consistent
-    data.forEach(d => {
+    data[0].forEach(d => {
         // Make general event type groups
         if (violent_events.includes(d['EVENT_TYPE'])) {
             d['GENERAL_EVENT_GROUP'] = 'violent_events'
@@ -43,31 +46,35 @@ d3.csv('data/data_removed_columns_sm.csv')
             data.push(clone);
         }
     });
-  });
+
+    
+const timeSlider = new TimeSlider({
+    parentElement: '#time-slider'
+}, data[0]);
 const symbolMap = new SymbolMap({
     parentElement: '#symbol-map'
-}, data);
+}, data[0], data[1]);
 const chord = new ChordDiagram({
     parentElement: '#chord-diagram'
-}, data);
+}, data[0]);
 
 const bubble_vio = new BubbleDiagram({
     parentElement: '#bubble-diagram-violent_events'
-}, data)
+}, data[0])
 const bubble_dem = new BubbleDiagram({
     parentElement: '#bubble-diagram-demonstration_events'
-}, data);
+}, data[0]);
 const bubble_non = new BubbleDiagram({
     parentElement: '#bubble-diagram-non_violent_actions'
-}, data);
+}, data[0]);
 
 d3.select('#country-selector').on('change', function() {
     let selected = d3.select(this).property('value');
-    let filtered = data
+    let filtered = data[0];
 
     if (selected) {
         if (selected != "All"){
-            filtered = data.filter((d) => d['COUNTRY'] == selected);
+            filtered = data[0].filter((d) => d['COUNTRY'] == selected);
         }
       
         symbolMap.data = filtered;
@@ -87,7 +94,6 @@ d3.select('#country-selector').on('change', function() {
     
     }
   });
-
  })
  .catch(error => console.error(error));
 

@@ -19,6 +19,7 @@ class ChordDiagram {
   
     initVis() {
       // Create SVG area, initialize scales and axes
+      this.updateVis();
     }
   
     updateVis() {
