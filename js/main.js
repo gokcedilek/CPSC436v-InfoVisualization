@@ -2,35 +2,40 @@
 /**
 * Load data from CSV file asynchronously and visualize it
 */
-d3.csv('data/data_removed_columns.csv')
-.then(data => {
+Promise.all([
+    d3.csv('data/data_inter.csv'),
+    d3.json('data/world-110m.json')
+  ]).then(data => {
     // Convert columns to numerical values
-    data.forEach(d => {
+    data[0].forEach(d => {
         Object.keys(d).forEach(attr => {
             if (attr == 'YEAR' || attr == 'INTER1' || attr == 'INTER2' || attr == 'INTERACTION' || 
             attr == 'LATITUDE' || attr == 'LONGITUDE' || attr == 'FATALITIES' || attr == 'TIMESTAMP'){
                 d[attr] = +d[attr]; 
             }
-    });
+    })
   });
 
+const timeSlider = new TimeSlider({
+    parentElement: '#time-slider'
+}, data[0]);
 const symbolMap = new SymbolMap({
     parentElement: '#symbol-map'
-}, data);
+}, data[0], data[1]);
 const chord = new ChordDiagram({
     parentElement: '#chord-diagram'
-}, data);
+}, data[0]);
 const bubble = new BubbleDiagram({
     parentElement: '#bubble-diagram'
-}, data);
+}, data[0]);
 
 d3.select('#country-selector').on('change', function() {
     let selected = d3.select(this).property('value');
-    let filtered = data
+    let filtered = data[0];
 
     if (selected) {
         if (selected != "All"){
-            filtered = data.filter((d) => d['COUNTRY'] == selected);
+            filtered = data[0].filter((d) => d['COUNTRY'] == selected);
         }
       
         symbolMap.data = filtered;
