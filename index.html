@@ -3,6 +3,7 @@
 <head>
     <title>Political Violence in the Middle East</title>
     <link rel="shortcut icon" href="#" />
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <h1>Political Violence in the Middle East</h1>
@@ -30,7 +31,23 @@
     
     <svg id="symbol-map"></svg>
     <svg id="chord-diagram"></svg>
-    <svg id="bubble-diagram"></svg>
+    <div id="info-source">
+        <svg id="bubble-diagram-violent_events"></svg>
+        <svg id="bubble-diagram-demonstration_events"></svg>
+        <svg id="bubble-diagram-non_violent_actions"></svg>
+        <div class="legend">
+            <ul>
+                <li class="legend-btn" source="international"><span class="legend-symbol"></span>International</li>
+                <li class="legend-btn" source="national"><span class="legend-symbol"></span>National</li>
+                <li class="legend-btn" source="subnational"><span class="legend-symbol"></span>Subnational</li>
+                <li class="legend-btn" source="regional"><span class="legend-symbol"></span>Regional</li>
+                <li class="legend-btn" source="localPartner"><span class="legend-symbol"></span>Local partner</li>
+                <li class="legend-btn" source="newMedia"><span class="legend-symbol"></span>New media</li>
+                <li class="legend-btn" source="other"><span class="legend-symbol"></span>Other</li>
+            </ul>
+        </div>
+        <div id="tooltip"></div>
+    </div>
 
     <script src="js/d3.v6.min.js"></script>
     <script src="js/main.js"></script>
