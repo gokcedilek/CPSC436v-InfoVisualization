@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 body {
     background: #fafcff;
   }
@@ -27,30 +26,13 @@ body {
     font-size: .75rem;
   }
   
-  #tooltip {
-=======
 /* Tooltip */
 #tooltip {
->>>>>>> 83fe1ce705b8a7c20dfd5042654d350680227c1b
     position: absolute;
     display: none;
     background: #fff;
     box-shadow: 3px 3px 3px 0px rgb(92 92 92 / 0.5);
     border: 1px solid #ddd;
-<<<<<<< HEAD
-    font-size: 12px;
-    font-weight: 500;
-    padding: 8px;
-    min-width: 160px;
-    color: #333;
-  }
-  .tooltip-title {
-    color: #000;
-    font-size: 14px;
-    font-weight: 600;
-  }
-  
-=======
     font-size: 20px;
     font-weight: 500;
     padding: 8px;
@@ -117,4 +99,3 @@ ul{
 .legend-btn[source="other"] .legend-symbol {
     background: #AAAAAA;
 }
->>>>>>> 83fe1ce705b8a7c20dfd5042654d350680227c1b
