@@ -77,6 +77,8 @@ class ChordDiagram {
       .html('<div id="bar-chart-div"></div>');
 
     vis.chart.call(vis.barChartTooltip);
+
+    this.updateVis();
   }
 
   updateVis() {

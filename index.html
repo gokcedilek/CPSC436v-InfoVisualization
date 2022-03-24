@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Political Violence in the Middle East</title>
+    <link rel="stylesheet" href="css/style.css" />
     <link rel="shortcut icon" href="#" />
     <link rel="stylesheet" href="css/style.css" />
   </head>
@@ -31,7 +32,37 @@
 
     <svg id="symbol-map"></svg>
     <svg id="chord-diagram"></svg>
-    <svg id="bubble-diagram"></svg>
+    <div id="info-source">
+      <svg id="bubble-diagram-violent_events"></svg>
+      <svg id="bubble-diagram-demonstration_events"></svg>
+      <svg id="bubble-diagram-non_violent_actions"></svg>
+      <div class="legend">
+        <ul>
+          <li class="legend-btn" source="international">
+            <span class="legend-symbol"></span>International
+          </li>
+          <li class="legend-btn" source="national">
+            <span class="legend-symbol"></span>National
+          </li>
+          <li class="legend-btn" source="subnational">
+            <span class="legend-symbol"></span>Subnational
+          </li>
+          <li class="legend-btn" source="regional">
+            <span class="legend-symbol"></span>Regional
+          </li>
+          <li class="legend-btn" source="localPartner">
+            <span class="legend-symbol"></span>Local partner
+          </li>
+          <li class="legend-btn" source="newMedia">
+            <span class="legend-symbol"></span>New media
+          </li>
+          <li class="legend-btn" source="other">
+            <span class="legend-symbol"></span>Other
+          </li>
+        </ul>
+      </div>
+      <div id="tooltip"></div>
+    </div>
 
     <!-- <div id="chord-arc-tooltip"></div> -->
     <!--todo: remove after adding text labels-->
@@ -43,7 +74,9 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/gh/bumbeishvili/d3-tip-for-v6@4/d3-tip.min.css"
     />
+    <script src="js/topojson.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/time.js"></script>
     <script src="js/symbol.js"></script>
     <script src="js/chord.js"></script>
     <script src="js/bubble.js"></script>
