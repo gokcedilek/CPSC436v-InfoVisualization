@@ -6,14 +6,14 @@ class BubbleDiagram {
    * @param {Object}
    * @param {Array}
    */
-   constructor(_config, _data) {
+   constructor(_config, _dispatcher, _data) {
     this.config = {
       parentElement: _config.parentElement,
       generalEventGroup: _config.parentElement.split("-")[2],
       className: 'bubble-diagram-' +  _config.generalEventGroup,
       containerWidth: 333,
       containerHeight: 333,
-      margin: {top: 30, right: 30, bottom: 30, left: 30},
+      margin: {top: 50, right: 30, bottom: 50, left: 30},
       tooltipPadding: 10,
       maxSize: 0,
       forceStrength: 0.03 // strength to apply to the position forces
@@ -63,9 +63,11 @@ class BubbleDiagram {
         vis.svg.append('text')
             .attr('class', 'axis-title')
             .attr('x', vis.width/2 + vis.config.margin.left)
-            .attr('y', 10)
+            .attr('y', vis.config.containerHeight - vis.config.margin.bottom/2)
             .attr('dy', '.71em')
-            .style('text-anchor', 'end')
+            .attr("font-weight",'bold')
+            .style("font-size", "1.5em")
+            .style('text-anchor', 'middle')
             .text(this.config.generalEventGroup.replace(/_/g,' '));
 
         this.updateVis()
@@ -80,8 +82,8 @@ class BubbleDiagram {
                 let node = {
                     name: key,
                     size: value,
-                    x: Math.random() * 333,
-                    y: Math.random() * 333
+                    x: Math.random() * 333 + this.radiusScale(value) + 2 * this.config.margin.left,
+                    y: Math.random() * 333 + this.radiusScale(value) + 2 * this.config.margin.top
                 }
                 myNodes.push(node)
             }
@@ -104,7 +106,7 @@ class BubbleDiagram {
     // charge is dependent on size of the bubble, so bigger towards the middle
     charge(d) {
        let forceSize = this.radiusScale(d.size)
-        return Math.pow(forceSize, 2.0) * 0.01
+        return Math.pow(forceSize, 2.0) * 0.001
     }
   
     updateVis() {

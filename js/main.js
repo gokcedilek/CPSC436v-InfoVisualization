@@ -60,13 +60,13 @@ const chord = new ChordDiagram({
 
 const bubble_vio = new BubbleDiagram({
     parentElement: '#bubble-diagram-violent_events'
-}, data[0])
+}, dispatcher, data[0])
 const bubble_dem = new BubbleDiagram({
     parentElement: '#bubble-diagram-demonstration_events'
-}, data[0]);
+}, dispatcher, data[0]);
 const bubble_non = new BubbleDiagram({
     parentElement: '#bubble-diagram-non_violent_actions'
-}, data[0]);
+}, dispatcher, data[0]);
 
 d3.select('#country-selector').on('change', function() {
     let selected = d3.select(this).property('value');
