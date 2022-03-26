@@ -1,5 +1,5 @@
 class BarChart {
-  constructor(_config, _data) {
+  constructor(_config, _data, sourceActor, targetActor) {
     this.config = {
       parentElement: _config.parentElement,
       containerWidth: 300,
@@ -7,7 +7,11 @@ class BarChart {
       margin: { top: 20, right: 30, bottom: 20, left: 50 },
     };
     this.data = _data;
+    this.sourceActor = sourceActor;
+    this.targetActor = targetActor;
     this.initVis();
+
+    console.log('data: ', this.data);
   }
 
   initVis() {
@@ -53,12 +57,13 @@ class BarChart {
       .style('text-anchor', 'end')
       .text('Year');
 
-    // const eventsOfActor = vis.data.filter(
-    //   (data) =>
-    //     data.INTER1 == d.source.index + 1 && data.INTER2 == d.target.index + 1
-    // );
-
-    // eventsOfActor.sort((a, b) => a.YEAR - b.YEAR);
+    // tooltipSVG
+    //   .append('text')
+    //   .attr('class', 'chart-title')
+    //   .attr('x', 120)
+    //   .attr('y', 4)
+    //   .attr('dy', '.71em')
+    //   .text(`${vis.sourceActor} - ${vis.targetActor}`);
 
     vis.fatalitiesPerYear = d3.rollups(
       vis.data,
@@ -101,25 +106,13 @@ class BarChart {
       .append('g')
       .attr('class', 'axis x-axis')
       .attr('transform', `translate(0, ${vis.height})`);
-    // .call(xAxis);
 
     vis.yAxisGroup = vis.tooltipSVGChart
       .append('g')
       .attr('class', 'axis y-axis');
-    // .call(yAxis);
 
     vis.renderVis();
   }
-
-  // updateVis() {
-  //   let vis = this;
-  //   // TODO: could do this filtering in chord and pass the filtered data as vis.data
-
-  //   // vis.yAxisScale.domain([0, maxFatalities]);
-  //   // vis.xAxisScale.domain(fatalitiesPerYear.map((d) => d.year));
-
-  //   vis.renderVis();
-  // }
 
   renderVis() {
     let vis = this;

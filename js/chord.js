@@ -8,15 +8,22 @@ class ChordDiagram {
     this.config = {
       parentElement: _config.parentElement,
       containerWidth: 1000,
-      containerHeight: 500,
+      containerHeight: 800,
       margin: { top: 30, right: 30, bottom: 30, left: 30 },
       tooltipPadding: 5,
+      legendWidth: 170,
+      legendHeight: 8,
+      legend: {
+        marginLeft: 5,
+        marginBetween: 20,
+        marginTop: 10,
+        textPadding: 20,
+      },
     };
     this.data = _data;
     this.selectedActor = 0;
     this.dispatcher = _dispatcher;
     this.interCodeMap = {
-      0: 'Undefined',
       1: 'State Forces',
       2: 'Rebel Groups',
       3: 'Political Militias',
@@ -68,14 +75,8 @@ class ChordDiagram {
     //   );
     vis.chart = vis.svg.append('g').attr('transform', `translate(250,250)`);
 
-    vis.barChartTooltip = d3
-      .tip()
-      .attr('class', 'bar-chart-tooltip')
-      // .offset([20, 120])
-      .html('<div id="bar-chart-div"></div>');
-    // .style('position', 'relative');
-
-    vis.chart.call(vis.barChartTooltip);
+    vis.legend = vis.svg.append('g').attr('transform', `translate(50, 480)`);
+    vis.legendData = Object.values(vis.interCodeMap);
 
     vis.updateVis();
   }
@@ -95,7 +96,6 @@ class ChordDiagram {
       }
     }
     vis.matrix = matrix;
-    console.log('matrix: ', matrix);
 
     vis.renderVis();
   }
@@ -105,52 +105,70 @@ class ChordDiagram {
     let vis = this;
     const chordData = d3.chord().padAngle(0.05)(vis.matrix);
 
-    const textId = { id: 0, href: new URL('#0', window.location) };
-    vis.chart
-      .append('path')
-      .attr('id', textId.id)
-      .attr('fill', 'none')
-      .attr(
-        'd',
-        d3.arc()({ outerRadius: 210, startAngle: 0, endAngle: 2 * Math.PI })
-      );
+    // const textId = { id: 0, href: new URL('#0', window.location) };
+    // vis.chart
+    //   .append('path')
+    //   .attr('id', textId.id)
+    //   .attr('fill', 'none')
+    //   .attr(
+    //     'd',
+    //     d3.arc()({ outerRadius: 210, startAngle: 0, endAngle: 2 * Math.PI })
+    //   );
 
-    // const filteredGroupData =
-    //   vis.selectedActor === 0
-    //     ? chordData.groups
-    //     : chordData.groups.filter((d) => d.index + 1 === vis.selectedActor);
-    // console.log('filtered groups: ', filteredGroupData);
+    const legendGroups = vis.legend
+      .selectAll('legend-item')
+      .data(vis.legendData)
+      .enter()
+      .append('g')
+      .attr('class', 'legend-item');
 
-    var angleData = [
-      { startAngle: 0, endAngle: Math.PI / 4 },
-      { startAngle: Math.PI / 4, endAngle: Math.PI / 2 },
-      { startAngle: Math.PI / 2, endAngle: (3 * Math.PI) / 4 },
-      { startAngle: (3 * Math.PI) / 4, endAngle: Math.PI },
-      { startAngle: Math.PI, endAngle: (5 * Math.PI) / 4 },
-      { startAngle: (5 * Math.PI) / 4, endAngle: (6 * Math.PI) / 4 },
-      { startAngle: (6 * Math.PI) / 4, endAngle: (7 * Math.PI) / 4 },
-      { startAngle: (7 * Math.PI) / 4, endAngle: 2 * Math.PI },
-    ];
+    legendGroups
+      .append('rect')
+      .attr('class', 'legend-icon')
+      .attr('fill', (_, i) => vis.chordColors[i])
+      .attr('width', 10)
+      .attr('height', 10)
+      // .attr('y', 0)
+      // .attr('x', (d, i) => i * 150);
+      .attr('x', (d, i) => {
+        if (i % 2 == 0) {
+          return vis.config.legend.marginLeft;
+        } else {
+          return vis.config.legendWidth;
+        }
+      })
+      .attr('y', (d, i) => {
+        return (
+          Math.floor(i / 2) * vis.config.legend.marginBetween +
+          vis.config.legend.marginTop
+        );
+      });
 
-    const chordGroupsUpdated = chordData.groups.map((group, idx) => {
-      return {
-        startAngle: angleData[idx].startAngle,
-        endAngle: angleData[idx].endAngle,
-        index: group.index,
-        value: group.value,
-      };
-    });
-
-    // console.log('chord data: ', chordData); // all of these need to change angles so too much work
-    // console.log('chord groups: ', chordData.groups);
-    console.log('chord groups: ', chordGroupsUpdated);
+    legendGroups
+      .append('text')
+      .attr('class', 'legend-label')
+      // .attr('x', (d, i) => i * 150 + 10)
+      // .attr('y', (d, i) => 10)
+      .attr('x', (d, i) => {
+        if (i % 2 == 0) {
+          return vis.config.legend.marginLeft + vis.config.legend.textPadding;
+        } else {
+          return vis.config.legendWidth + vis.config.legend.textPadding;
+        }
+      })
+      .attr('y', (d, i) => {
+        return (
+          Math.floor(i / 2) * vis.config.legend.marginBetween +
+          vis.config.legend.marginTop * 2
+        );
+      })
+      .text((d) => d);
 
     const chordNodeGroup = vis.chart
       // .append('g')
       // .join('g')
       .selectAll('.chord-node')
       .data(chordData.groups)
-      // .data(chordGroupsUpdated)
       .join('g')
       .attr('class', 'chord-node');
 
@@ -158,176 +176,46 @@ class ChordDiagram {
       .append('path')
       .attr('fill', (_, i) => vis.chordColors[i])
       .attr('stroke', 'black')
-      .attr(
-        'd',
-        // const startAngle = i * 45;
-        // const endAngle = (i + 1) * 45;
-        // console.log('d: ', d);
-        // console.log(`i: ${i}, start: ${startAngle}, end: ${endAngle}`);
-        d3.arc().innerRadius(200).outerRadius(210)
-        // .startAngle(0)
-        // .endAngle(0);
-        // return function(i) {
-        //   arc.end
-        // }
-        // return d3
-        //   .arc()
-        //   .innerRadius(200)
-        //   .outerRadius(210)
-        //   .startAngle(function (i) {
-        //     return i * 45;
-        //   })
-        //   .endAngle(function (i) {
-        //     return (i + 1) * 45;
-        //   });
-      )
+      .attr('d', d3.arc().innerRadius(200).outerRadius(210))
       .attr('id', (_, i) => 'chord-node-id' + i);
 
-    chordNodeGroup
-      .append('text')
-      // .attr('dx', 3)
-      .attr('dy', (d, i) => {
-        if (d.value < 700) {
-          if (i % 2 == 0) {
-            return -20;
-          } else {
-            return -5;
-          }
-        } else {
-          return -5;
-        }
-      })
-      .attr('font-size', '0.65em')
-      .append('textPath')
-      // .attr('textLength', 40)
-      .attr('xlink:href', function (d) {
-        // return '#chord-node-id' + d.index;
-        return textId.href;
-      })
-      .attr('startOffset', (d) => d.startAngle * 210)
-      .text(function (d) {
-        return vis.interCodeMap[d.index + 1];
-      });
+    // chordNodeGroup
+    //   .append('text')
+    //   // .attr('dx', 3)
+    //   .attr('dy', (d, i) => {
+    //     if (d.value < 700) {
+    //       if (i % 2 == 0) {
+    //         return -20;
+    //       } else {
+    //         return -5;
+    //       }
+    //     } else {
+    //       return -5;
+    //     }
+    //   })
+    //   .attr('font-size', '0.65em')
+    //   .append('textPath')
+    //   // .attr('textLength', 40)
+    //   .attr('xlink:href', function (d) {
+    //     // return '#chord-node-id' + d.index;
+    //     return textId.href;
+    //   })
+    //   .attr('startOffset', (d) => d.startAngle * 210)
+    //   .text(function (d) {
+    //     return vis.interCodeMap[d.index + 1];
+    //   });
 
-    chordNodes
-      // .on('mouseover', function (event, d) {
-      //   const eventsOfActor = vis.data.filter(
-      //     (data) => data.INTER1 == d.index + 1 || data.INTER2 == d.index + 1
-      //   );
-      //   eventsOfActor.sort((a, b) => a.YEAR - b.YEAR);
-
-      //   let fatalitiesPerYear = d3.rollups(
-      //     eventsOfActor,
-      //     (a) => d3.sum(a, (b) => b.FATALITIES),
-      //     (b) => b.YEAR
-      //   );
-
-      //   fatalitiesPerYear = fatalitiesPerYear.map(([year, fatalities]) => ({
-      //     year,
-      //     fatalities,
-      //   }));
-
-      //   // console.log('d: ', d, ' offset: ', event);
-      //   // vis.barChartTooltip.offset([0, 600 - event.pageX]);
-      //   vis.barChartTooltip.show(d, this);
-      //   const containerWidth = 300;
-      //   const containerHeight = 250;
-      //   const margin = { top: 20, right: 30, bottom: 20, left: 50 };
-      //   const width = containerWidth - margin.left - margin.right;
-      //   const height = containerHeight - margin.top - margin.bottom;
-      //   const tooltipSVG = d3
-      //     .select('#bar-chart-div')
-      //     .append('svg')
-      //     .attr('width', containerWidth)
-      //     .attr('height', containerHeight);
-
-      //   const tooltipSVGChart = tooltipSVG
-      //     .append('g')
-      //     .attr('transform', `translate(${margin.left},${margin.top})`);
-
-      //   tooltipSVG
-      //     .append('text')
-      //     .attr('class', 'axis-title')
-      //     .attr('x', 4)
-      //     .attr('y', 4)
-      //     .attr('dy', '.71em')
-      //     .text('Fatalities (sum)');
-
-      //   tooltipSVGChart
-      //     .append('text')
-      //     .attr('class', 'axis-title')
-      //     .attr('y', height - 10)
-      //     .attr('x', width + 30)
-      //     .attr('dy', '.71em')
-      //     .style('text-anchor', 'end')
-      //     .text('Year');
-
-      //   const minYear = fatalitiesPerYear[0].year;
-      //   const maxYear = fatalitiesPerYear[fatalitiesPerYear.length - 1].year;
-      //   const maxFatalities = d3.max(fatalitiesPerYear, (d) => d.fatalities);
-
-      //   const numYears = maxYear - minYear + 1;
-
-      //   const yAxisScale = d3
-      //     .scaleLinear()
-      //     .domain([0, maxFatalities])
-      //     .range([height, 0]);
-      //   const xAxisScale = d3
-      //     .scaleBand()
-      //     .domain(fatalitiesPerYear.map((d) => d.year))
-      //     .range([0, width])
-      //     .padding(0.1);
-      //   const yAxis = d3
-      //     .axisLeft(yAxisScale)
-      //     .tickFormat((t) => t)
-      //     .tickSizeOuter(0)
-      //     .tickPadding(5);
-
-      //   const xAxis = d3
-      //     .axisBottom(xAxisScale)
-      //     .ticks(numYears)
-      //     .tickSizeOuter(0)
-      //     .tickPadding(3);
-
-      //   const xAxisGroup = tooltipSVGChart
-      //     .append('g')
-      //     .attr('class', 'axis x-axis')
-      //     .attr('transform', `translate(0, ${height})`)
-      //     .call(xAxis);
-
-      //   const yAxisGroup = tooltipSVGChart
-      //     .append('g')
-      //     .attr('class', 'axis y-axis')
-      //     .call(yAxis);
-
-      //   const bars = tooltipSVGChart
-      //     .selectAll('.bar')
-      //     .data(fatalitiesPerYear)
-      //     .join('rect')
-      //     .attr('class', 'bar')
-      //     .attr('x', (d) => xAxisScale(d.year))
-      //     .attr('width', xAxisScale.bandwidth())
-      //     .attr('height', (d) => height - yAxisScale(d.fatalities))
-      //     .attr('y', (d) => yAxisScale(d.fatalities))
-      //     .attr('fill', '#d1d7de');
-      // })
-      // .on('mouseleave', function () {
-      //   vis.barChartTooltip.hide();
-      // })
-      .on('click', function (event, d) {
-        const isSelected = vis.selectedActor !== 0;
-        console.log('is selected: ', isSelected);
-        if (isSelected) {
-          vis.selectedActor = 0;
-          vis.updateVis();
-        } else {
-          vis.selectedActor = d.index + 1;
-          vis.updateVis();
-        }
-      });
-
-    // console.log('arcs: ', chordData);
-    // console.log('selected: ', vis.selectedActor);
+    chordNodes.on('click', function (event, d) {
+      const isSelected = vis.selectedActor !== 0;
+      console.log('is selected: ', isSelected);
+      if (isSelected) {
+        vis.selectedActor = 0;
+        vis.updateVis();
+      } else {
+        vis.selectedActor = d.index + 1;
+        vis.updateVis();
+      }
+    });
 
     const filteredChordData =
       vis.selectedActor === 0
@@ -356,131 +244,26 @@ class ChordDiagram {
             data.INTER2 == d.target.index + 1
         );
         eventsOfActor.sort((a, b) => a.YEAR - b.YEAR);
-        console.log('selected arc: ', d, ' num events: ', eventsOfActor.length);
+        console.log('d: ', d);
+        const sourceActor = vis.interCodeMap[d.source.index + 1];
+        const targetActor = vis.interCodeMap[d.target.index + 1];
+        console.log('source: ', sourceActor, ' target: ', targetActor);
 
         d3.select('#chord-tooltip').style('display', 'block');
-        // .style('left', event.pageX + vis.config.tooltipPadding + 'px')
-        // .style('top', event.pageY + vis.config.tooltipPadding + 'px');
 
         const barChart = new BarChart(
           {
             parentElement: '#chord-tooltip',
           },
-          eventsOfActor
+          eventsOfActor,
+          sourceActor,
+          targetActor
         );
-        // const eventsOfActor = vis.data.filter(
-        //   (data) => data.INTER1 == d.index + 1 || data.INTER2 == d.index + 1
-        // );
-        // const eventsOfActor = vis.data.filter(
-        //   (data) =>
-        //     data.INTER1 == d.source.index + 1 &&
-        //     data.INTER2 == d.target.index + 1
-        // );
-        // console.log('selected arc: ', d, ' num events: ', eventsOfActor.length);
-        // eventsOfActor.sort((a, b) => a.YEAR - b.YEAR);
-        // let fatalitiesPerYear = d3.rollups(
-        //   eventsOfActor,
-        //   (a) => d3.sum(a, (b) => b.FATALITIES),
-        //   (b) => b.YEAR
-        // );
-        // fatalitiesPerYear = fatalitiesPerYear.map(([year, fatalities]) => ({
-        //   year,
-        //   fatalities,
-        // }));
-        // // console.log('d: ', d, ' offset: ', event);
-        // // vis.barChartTooltip.offset([0, 600 - event.pageX]);
-        // vis.barChartTooltip.show(d, this);
-        // const containerWidth = 300;
-        // const containerHeight = 250;
-        // const margin = { top: 20, right: 30, bottom: 20, left: 50 };
-        // const width = containerWidth - margin.left - margin.right;
-        // const height = containerHeight - margin.top - margin.bottom;
-        // const tooltipSVG = d3
-        //   .select('#bar-chart-div')
-        //   .append('svg')
-        //   .attr('width', containerWidth)
-        //   .attr('height', containerHeight);
-        // const tooltipSVGChart = tooltipSVG
-        //   .append('g')
-        //   .attr('transform', `translate(${margin.left},${margin.top})`);
-        // tooltipSVG
-        //   .append('text')
-        //   .attr('class', 'axis-title')
-        //   .attr('x', 4)
-        //   .attr('y', 4)
-        //   .attr('dy', '.71em')
-        //   .text('Fatalities (sum)');
-        // tooltipSVGChart
-        //   .append('text')
-        //   .attr('class', 'axis-title')
-        //   .attr('y', height - 10)
-        //   .attr('x', width + 30)
-        //   .attr('dy', '.71em')
-        //   .style('text-anchor', 'end')
-        //   .text('Year');
-        // const minYear = fatalitiesPerYear[0].year;
-        // const maxYear = fatalitiesPerYear[fatalitiesPerYear.length - 1].year;
-        // const maxFatalities = d3.max(fatalitiesPerYear, (d) => d.fatalities);
-        // const numYears = maxYear - minYear + 1;
-        // const yAxisScale = d3
-        //   .scaleLinear()
-        //   .domain([0, maxFatalities])
-        //   .range([height, 0]);
-        // const xAxisScale = d3
-        //   .scaleBand()
-        //   .domain(fatalitiesPerYear.map((d) => d.year))
-        //   .range([0, width])
-        //   .padding(0.1);
-        // const yAxis = d3
-        //   .axisLeft(yAxisScale)
-        //   .tickFormat((t) => t)
-        //   .tickSizeOuter(0)
-        //   .tickPadding(5);
-        // const xAxis = d3
-        //   .axisBottom(xAxisScale)
-        //   .ticks(numYears)
-        //   .tickSizeOuter(0)
-        //   .tickPadding(3);
-        // const xAxisGroup = tooltipSVGChart
-        //   .append('g')
-        //   .attr('class', 'axis x-axis')
-        //   .attr('transform', `translate(0, ${height})`)
-        //   .call(xAxis);
-        // const yAxisGroup = tooltipSVGChart
-        //   .append('g')
-        //   .attr('class', 'axis y-axis')
-        //   .call(yAxis);
-        // const bars = tooltipSVGChart
-        //   .selectAll('.bar')
-        //   .data(fatalitiesPerYear)
-        //   .join('rect')
-        //   .attr('class', 'bar')
-        //   .attr('x', (d) => xAxisScale(d.year))
-        //   .attr('width', xAxisScale.bandwidth())
-        //   .attr('height', (d) => height - yAxisScale(d.fatalities))
-        //   .attr('y', (d) => yAxisScale(d.fatalities))
-        //   .attr('fill', '#d1d7de');
       })
       .on('mouseleave', function () {
         // vis.barChartTooltip.hide();
         d3.select('#chord-tooltip').style('display', 'none');
         d3.select('#chord-tooltip-svg').remove();
       });
-
-    // chordArcs
-    //   .on('mouseover', function (event, d) {
-    //     d3
-    //       .select('#chord-tooltip')
-    //       .style('display', 'block')
-    //       .style('left', event.pageX + vis.config.tooltipPadding + 'px')
-    //       .style('top', event.pageY + vis.config.tooltipPadding + 'px').html(`
-    //         <div><i>${
-    //           vis.interCodeMap[d.source.index]
-    //         } - ${vis.interCodeMap[d.target.index]}</i></div>
-    //       `);
-    //   })
-    //   .on('mouseleave', function () {
-    //     d3.select('#chord-tooltip').style('display', 'none');
-    //   });
   }
 }
