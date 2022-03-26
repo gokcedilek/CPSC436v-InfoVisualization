@@ -13,7 +13,6 @@ class ChordDiagram {
       tooltipPadding: 5,
     };
     this.data = _data;
-    // this.data = this.data.slice(0, 10000);
     this.selectedActor = 0;
     this.dispatcher = _dispatcher;
     this.interCodeMap = {
@@ -32,7 +31,6 @@ class ChordDiagram {
     this.chordColors = [
       '#fc928b',
       '#07a822',
-      // '#41b2ba',
       '#5276f7',
       '#ae94d4',
       '#dbaa09',
@@ -73,12 +71,13 @@ class ChordDiagram {
     vis.barChartTooltip = d3
       .tip()
       .attr('class', 'bar-chart-tooltip')
-      .offset([20, 120])
+      // .offset([20, 120])
       .html('<div id="bar-chart-div"></div>');
+    // .style('position', 'relative');
 
     vis.chart.call(vis.barChartTooltip);
 
-    this.updateVis();
+    vis.updateVis();
   }
 
   updateVis() {
@@ -96,6 +95,7 @@ class ChordDiagram {
       }
     }
     vis.matrix = matrix;
+    console.log('matrix: ', matrix);
 
     vis.renderVis();
   }
@@ -121,12 +121,36 @@ class ChordDiagram {
     //     : chordData.groups.filter((d) => d.index + 1 === vis.selectedActor);
     // console.log('filtered groups: ', filteredGroupData);
 
+    var angleData = [
+      { startAngle: 0, endAngle: Math.PI / 4 },
+      { startAngle: Math.PI / 4, endAngle: Math.PI / 2 },
+      { startAngle: Math.PI / 2, endAngle: (3 * Math.PI) / 4 },
+      { startAngle: (3 * Math.PI) / 4, endAngle: Math.PI },
+      { startAngle: Math.PI, endAngle: (5 * Math.PI) / 4 },
+      { startAngle: (5 * Math.PI) / 4, endAngle: (6 * Math.PI) / 4 },
+      { startAngle: (6 * Math.PI) / 4, endAngle: (7 * Math.PI) / 4 },
+      { startAngle: (7 * Math.PI) / 4, endAngle: 2 * Math.PI },
+    ];
+
+    const chordGroupsUpdated = chordData.groups.map((group, idx) => {
+      return {
+        startAngle: angleData[idx].startAngle,
+        endAngle: angleData[idx].endAngle,
+        index: group.index,
+        value: group.value,
+      };
+    });
+
+    // console.log('chord data: ', chordData); // all of these need to change angles so too much work
+    // console.log('chord groups: ', chordData.groups);
+    console.log('chord groups: ', chordGroupsUpdated);
+
     const chordNodeGroup = vis.chart
       // .append('g')
       // .join('g')
       .selectAll('.chord-node')
       .data(chordData.groups)
-      // .data(filteredGroupData)
+      // .data(chordGroupsUpdated)
       .join('g')
       .attr('class', 'chord-node');
 
@@ -134,17 +158,29 @@ class ChordDiagram {
       .append('path')
       .attr('fill', (_, i) => vis.chordColors[i])
       .attr('stroke', 'black')
-      .attr('d', (_, i) => {
-        const startAngle = i * 45;
-        const endAngle = (i + 1) * 45;
-        console.log(`i: ${i}, start: ${startAngle}, end: ${endAngle}`);
-        return d3
-          .arc()
-          .innerRadius(200)
-          .outerRadius(210)
-          .startAngle((i) => i * 45)
-          .endAngle((i) => (i + 1) * 45);
-      })
+      .attr(
+        'd',
+        // const startAngle = i * 45;
+        // const endAngle = (i + 1) * 45;
+        // console.log('d: ', d);
+        // console.log(`i: ${i}, start: ${startAngle}, end: ${endAngle}`);
+        d3.arc().innerRadius(200).outerRadius(210)
+        // .startAngle(0)
+        // .endAngle(0);
+        // return function(i) {
+        //   arc.end
+        // }
+        // return d3
+        //   .arc()
+        //   .innerRadius(200)
+        //   .outerRadius(210)
+        //   .startAngle(function (i) {
+        //     return i * 45;
+        //   })
+        //   .endAngle(function (i) {
+        //     return (i + 1) * 45;
+        //   });
+      )
       .attr('id', (_, i) => 'chord-node-id' + i);
 
     chordNodeGroup
@@ -174,108 +210,110 @@ class ChordDiagram {
       });
 
     chordNodes
-      .on('mouseover', function (event, d) {
-        const eventsOfActor = vis.data.filter(
-          (data) => data.INTER1 == d.index + 1 || data.INTER2 == d.index + 1
-        );
-        eventsOfActor.sort((a, b) => a.YEAR - b.YEAR);
+      // .on('mouseover', function (event, d) {
+      //   const eventsOfActor = vis.data.filter(
+      //     (data) => data.INTER1 == d.index + 1 || data.INTER2 == d.index + 1
+      //   );
+      //   eventsOfActor.sort((a, b) => a.YEAR - b.YEAR);
 
-        let fatalitiesPerYear = d3.rollups(
-          eventsOfActor,
-          (a) => d3.sum(a, (b) => b.FATALITIES),
-          (b) => b.YEAR
-        );
+      //   let fatalitiesPerYear = d3.rollups(
+      //     eventsOfActor,
+      //     (a) => d3.sum(a, (b) => b.FATALITIES),
+      //     (b) => b.YEAR
+      //   );
 
-        fatalitiesPerYear = fatalitiesPerYear.map(([year, fatalities]) => ({
-          year,
-          fatalities,
-        }));
+      //   fatalitiesPerYear = fatalitiesPerYear.map(([year, fatalities]) => ({
+      //     year,
+      //     fatalities,
+      //   }));
 
-        vis.barChartTooltip.show(d, this);
-        const containerWidth = 300;
-        const containerHeight = 250;
-        const margin = { top: 20, right: 30, bottom: 20, left: 50 };
-        const width = containerWidth - margin.left - margin.right;
-        const height = containerHeight - margin.top - margin.bottom;
-        const tooltipSVG = d3
-          .select('#bar-chart-div')
-          .append('svg')
-          .attr('width', containerWidth)
-          .attr('height', containerHeight);
+      //   // console.log('d: ', d, ' offset: ', event);
+      //   // vis.barChartTooltip.offset([0, 600 - event.pageX]);
+      //   vis.barChartTooltip.show(d, this);
+      //   const containerWidth = 300;
+      //   const containerHeight = 250;
+      //   const margin = { top: 20, right: 30, bottom: 20, left: 50 };
+      //   const width = containerWidth - margin.left - margin.right;
+      //   const height = containerHeight - margin.top - margin.bottom;
+      //   const tooltipSVG = d3
+      //     .select('#bar-chart-div')
+      //     .append('svg')
+      //     .attr('width', containerWidth)
+      //     .attr('height', containerHeight);
 
-        const tooltipSVGChart = tooltipSVG
-          .append('g')
-          .attr('transform', `translate(${margin.left},${margin.top})`);
+      //   const tooltipSVGChart = tooltipSVG
+      //     .append('g')
+      //     .attr('transform', `translate(${margin.left},${margin.top})`);
 
-        tooltipSVG
-          .append('text')
-          .attr('class', 'axis-title')
-          .attr('x', 4)
-          .attr('y', 4)
-          .attr('dy', '.71em')
-          .text('Fatalities (sum)');
+      //   tooltipSVG
+      //     .append('text')
+      //     .attr('class', 'axis-title')
+      //     .attr('x', 4)
+      //     .attr('y', 4)
+      //     .attr('dy', '.71em')
+      //     .text('Fatalities (sum)');
 
-        tooltipSVGChart
-          .append('text')
-          .attr('class', 'axis-title')
-          .attr('y', height - 10)
-          .attr('x', width + 30)
-          .attr('dy', '.71em')
-          .style('text-anchor', 'end')
-          .text('Year');
+      //   tooltipSVGChart
+      //     .append('text')
+      //     .attr('class', 'axis-title')
+      //     .attr('y', height - 10)
+      //     .attr('x', width + 30)
+      //     .attr('dy', '.71em')
+      //     .style('text-anchor', 'end')
+      //     .text('Year');
 
-        const minYear = fatalitiesPerYear[0].year;
-        const maxYear = fatalitiesPerYear[fatalitiesPerYear.length - 1].year;
-        const maxFatalities = d3.max(fatalitiesPerYear, (d) => d.fatalities);
+      //   const minYear = fatalitiesPerYear[0].year;
+      //   const maxYear = fatalitiesPerYear[fatalitiesPerYear.length - 1].year;
+      //   const maxFatalities = d3.max(fatalitiesPerYear, (d) => d.fatalities);
 
-        const numYears = maxYear - minYear + 1;
+      //   const numYears = maxYear - minYear + 1;
 
-        const yAxisScale = d3
-          .scaleLinear()
-          .domain([0, maxFatalities])
-          .range([height, 0]);
-        const xAxisScale = d3
-          .scaleBand()
-          .domain(fatalitiesPerYear.map((d) => d.year))
-          .range([0, width])
-          .padding(0.1);
-        const yAxis = d3
-          .axisLeft(yAxisScale)
-          .tickFormat((t) => t)
-          .tickSizeOuter(0)
-          .tickPadding(5);
+      //   const yAxisScale = d3
+      //     .scaleLinear()
+      //     .domain([0, maxFatalities])
+      //     .range([height, 0]);
+      //   const xAxisScale = d3
+      //     .scaleBand()
+      //     .domain(fatalitiesPerYear.map((d) => d.year))
+      //     .range([0, width])
+      //     .padding(0.1);
+      //   const yAxis = d3
+      //     .axisLeft(yAxisScale)
+      //     .tickFormat((t) => t)
+      //     .tickSizeOuter(0)
+      //     .tickPadding(5);
 
-        const xAxis = d3
-          .axisBottom(xAxisScale)
-          .ticks(numYears)
-          .tickSizeOuter(0)
-          .tickPadding(3);
+      //   const xAxis = d3
+      //     .axisBottom(xAxisScale)
+      //     .ticks(numYears)
+      //     .tickSizeOuter(0)
+      //     .tickPadding(3);
 
-        const xAxisGroup = tooltipSVGChart
-          .append('g')
-          .attr('class', 'axis x-axis')
-          .attr('transform', `translate(0, ${height})`)
-          .call(xAxis);
+      //   const xAxisGroup = tooltipSVGChart
+      //     .append('g')
+      //     .attr('class', 'axis x-axis')
+      //     .attr('transform', `translate(0, ${height})`)
+      //     .call(xAxis);
 
-        const yAxisGroup = tooltipSVGChart
-          .append('g')
-          .attr('class', 'axis y-axis')
-          .call(yAxis);
+      //   const yAxisGroup = tooltipSVGChart
+      //     .append('g')
+      //     .attr('class', 'axis y-axis')
+      //     .call(yAxis);
 
-        const bars = tooltipSVGChart
-          .selectAll('.bar')
-          .data(fatalitiesPerYear)
-          .join('rect')
-          .attr('class', 'bar')
-          .attr('x', (d) => xAxisScale(d.year))
-          .attr('width', xAxisScale.bandwidth())
-          .attr('height', (d) => height - yAxisScale(d.fatalities))
-          .attr('y', (d) => yAxisScale(d.fatalities))
-          .attr('fill', '#d1d7de');
-      })
-      .on('mouseleave', function () {
-        vis.barChartTooltip.hide();
-      })
+      //   const bars = tooltipSVGChart
+      //     .selectAll('.bar')
+      //     .data(fatalitiesPerYear)
+      //     .join('rect')
+      //     .attr('class', 'bar')
+      //     .attr('x', (d) => xAxisScale(d.year))
+      //     .attr('width', xAxisScale.bandwidth())
+      //     .attr('height', (d) => height - yAxisScale(d.fatalities))
+      //     .attr('y', (d) => yAxisScale(d.fatalities))
+      //     .attr('fill', '#d1d7de');
+      // })
+      // .on('mouseleave', function () {
+      //   vis.barChartTooltip.hide();
+      // })
       .on('click', function (event, d) {
         const isSelected = vis.selectedActor !== 0;
         console.log('is selected: ', isSelected);
@@ -288,8 +326,8 @@ class ChordDiagram {
         }
       });
 
-    console.log('arcs: ', chordData);
-    console.log('selected: ', vis.selectedActor);
+    // console.log('arcs: ', chordData);
+    // console.log('selected: ', vis.selectedActor);
 
     const filteredChordData =
       vis.selectedActor === 0
@@ -309,6 +347,125 @@ class ChordDiagram {
       .attr('fill', (d) => vis.chordColors[d.source.index])
       .attr('stroke', 'black')
       .classed('selected', (d) => d.source.index + 1 === vis.selectedActor);
+
+    chordArcs
+      .on('mouseover', function (event, d) {
+        const eventsOfActor = vis.data.filter(
+          (data) =>
+            data.INTER1 == d.source.index + 1 &&
+            data.INTER2 == d.target.index + 1
+        );
+        eventsOfActor.sort((a, b) => a.YEAR - b.YEAR);
+        console.log('selected arc: ', d, ' num events: ', eventsOfActor.length);
+
+        d3.select('#chord-tooltip').style('display', 'block');
+        // .style('left', event.pageX + vis.config.tooltipPadding + 'px')
+        // .style('top', event.pageY + vis.config.tooltipPadding + 'px');
+
+        const barChart = new BarChart(
+          {
+            parentElement: '#chord-tooltip',
+          },
+          eventsOfActor
+        );
+        // const eventsOfActor = vis.data.filter(
+        //   (data) => data.INTER1 == d.index + 1 || data.INTER2 == d.index + 1
+        // );
+        // const eventsOfActor = vis.data.filter(
+        //   (data) =>
+        //     data.INTER1 == d.source.index + 1 &&
+        //     data.INTER2 == d.target.index + 1
+        // );
+        // console.log('selected arc: ', d, ' num events: ', eventsOfActor.length);
+        // eventsOfActor.sort((a, b) => a.YEAR - b.YEAR);
+        // let fatalitiesPerYear = d3.rollups(
+        //   eventsOfActor,
+        //   (a) => d3.sum(a, (b) => b.FATALITIES),
+        //   (b) => b.YEAR
+        // );
+        // fatalitiesPerYear = fatalitiesPerYear.map(([year, fatalities]) => ({
+        //   year,
+        //   fatalities,
+        // }));
+        // // console.log('d: ', d, ' offset: ', event);
+        // // vis.barChartTooltip.offset([0, 600 - event.pageX]);
+        // vis.barChartTooltip.show(d, this);
+        // const containerWidth = 300;
+        // const containerHeight = 250;
+        // const margin = { top: 20, right: 30, bottom: 20, left: 50 };
+        // const width = containerWidth - margin.left - margin.right;
+        // const height = containerHeight - margin.top - margin.bottom;
+        // const tooltipSVG = d3
+        //   .select('#bar-chart-div')
+        //   .append('svg')
+        //   .attr('width', containerWidth)
+        //   .attr('height', containerHeight);
+        // const tooltipSVGChart = tooltipSVG
+        //   .append('g')
+        //   .attr('transform', `translate(${margin.left},${margin.top})`);
+        // tooltipSVG
+        //   .append('text')
+        //   .attr('class', 'axis-title')
+        //   .attr('x', 4)
+        //   .attr('y', 4)
+        //   .attr('dy', '.71em')
+        //   .text('Fatalities (sum)');
+        // tooltipSVGChart
+        //   .append('text')
+        //   .attr('class', 'axis-title')
+        //   .attr('y', height - 10)
+        //   .attr('x', width + 30)
+        //   .attr('dy', '.71em')
+        //   .style('text-anchor', 'end')
+        //   .text('Year');
+        // const minYear = fatalitiesPerYear[0].year;
+        // const maxYear = fatalitiesPerYear[fatalitiesPerYear.length - 1].year;
+        // const maxFatalities = d3.max(fatalitiesPerYear, (d) => d.fatalities);
+        // const numYears = maxYear - minYear + 1;
+        // const yAxisScale = d3
+        //   .scaleLinear()
+        //   .domain([0, maxFatalities])
+        //   .range([height, 0]);
+        // const xAxisScale = d3
+        //   .scaleBand()
+        //   .domain(fatalitiesPerYear.map((d) => d.year))
+        //   .range([0, width])
+        //   .padding(0.1);
+        // const yAxis = d3
+        //   .axisLeft(yAxisScale)
+        //   .tickFormat((t) => t)
+        //   .tickSizeOuter(0)
+        //   .tickPadding(5);
+        // const xAxis = d3
+        //   .axisBottom(xAxisScale)
+        //   .ticks(numYears)
+        //   .tickSizeOuter(0)
+        //   .tickPadding(3);
+        // const xAxisGroup = tooltipSVGChart
+        //   .append('g')
+        //   .attr('class', 'axis x-axis')
+        //   .attr('transform', `translate(0, ${height})`)
+        //   .call(xAxis);
+        // const yAxisGroup = tooltipSVGChart
+        //   .append('g')
+        //   .attr('class', 'axis y-axis')
+        //   .call(yAxis);
+        // const bars = tooltipSVGChart
+        //   .selectAll('.bar')
+        //   .data(fatalitiesPerYear)
+        //   .join('rect')
+        //   .attr('class', 'bar')
+        //   .attr('x', (d) => xAxisScale(d.year))
+        //   .attr('width', xAxisScale.bandwidth())
+        //   .attr('height', (d) => height - yAxisScale(d.fatalities))
+        //   .attr('y', (d) => yAxisScale(d.fatalities))
+        //   .attr('fill', '#d1d7de');
+      })
+      .on('mouseleave', function () {
+        // vis.barChartTooltip.hide();
+        d3.select('#chord-tooltip').style('display', 'none');
+        d3.select('#chord-tooltip-svg').remove();
+      });
 
     // chordArcs
     //   .on('mouseover', function (event, d) {

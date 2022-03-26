@@ -5,8 +5,14 @@
   border: 1px solid #ddd;
   min-width: 100px;
   padding: 5px;
-  left: 100px;
-  top: 100px;
+  /* left: 100px;
+  top: 100px; */
+  left: 500px;
+  top: 580px;
+}
+
+/* .bar-chart-tooltip {
+  position: relative !important;
 }
 
 #bar-chart-div {
@@ -15,9 +21,9 @@
 
 #bar-chart-div svg {
   position: absolute;
-  left: 100px;
-  top: 100px;
-}
+  left: 500px;
+  bottom: 1350px;
+} */
 
 body {
   background: #fafcff;
