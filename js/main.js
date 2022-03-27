@@ -14,11 +14,9 @@ const dispatcher = d3.dispatch('filteredInfoSourceEvent');
 
 // d3.csv('data/data_removed_columns.csv')
 Promise.all([
-  //   d3.csv('data/data_removed_columns_sm.csv'),
-  d3.csv('data/data_inter_fatalities.csv'),
-  d3.json('data/world-110m.json'),
-])
-  .then((data) => {
+    d3.csv('data/data_inter.csv'),
+    d3.json('data/world-110m.json')
+  ]).then(data => {
     // Convert columns to numerical values
     data[0].forEach((d) => {
       Object.keys(d).forEach((attr) => {
@@ -80,6 +78,7 @@ Promise.all([
       data[0]
     );
 
+<<<<<<< HEAD
     const bubble_vio = new BubbleDiagram(
       {
         parentElement: '#bubble-diagram-violent_events',
@@ -98,6 +97,17 @@ Promise.all([
       },
       data[0]
     );
+=======
+const bubble_vio = new BubbleDiagram({
+    parentElement: '#bubble-diagram-violent_events'
+}, dispatcher, data[0])
+const bubble_dem = new BubbleDiagram({
+    parentElement: '#bubble-diagram-demonstration_events'
+}, dispatcher, data[0]);
+const bubble_non = new BubbleDiagram({
+    parentElement: '#bubble-diagram-non_violent_actions'
+}, dispatcher, data[0]);
+>>>>>>> 061eee45ed08427af12e70c1f7fdc03faa9680b7
 
     d3.select('#country-selector').on('change', function () {
       let selected = d3.select(this).property('value');
@@ -135,6 +145,7 @@ Promise.all([
 
 // dispatcher.on('filterByActor', () => {});
 
+<<<<<<< HEAD
 dispatcher.on('filteredInfoSourceEvent', (selectedInfoSourceEvents) => {
   if (selectedInfoSourceEvents.length == 0) {
     chord.data = data;
@@ -145,3 +156,13 @@ dispatcher.on('filteredInfoSourceEvent', (selectedInfoSourceEvents) => {
   }
   chord.updateVis();
 });
+=======
+dispatcher.on('filteredInfoSourceEvent', (selectedEvents, selectedInfoSource) => {
+    if (selectedEvents.length == 0 && selectedInfoSource.length == 0) {
+        chord.data = data;
+    } else {
+        // chord.data = data.filter(d => selectedInfoSourceEvents.includes(d.GENERAL_EVENT_GROUP));
+    }
+    chord.updateVis();
+});
+>>>>>>> 061eee45ed08427af12e70c1f7fdc03faa9680b7
