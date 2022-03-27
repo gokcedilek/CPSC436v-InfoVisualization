@@ -11,7 +11,7 @@ const dispatcher = d3.dispatch('filteredInfoSourceEvent');
 
 // d3.csv('data/data_removed_columns.csv')
 Promise.all([
-    d3.csv('data/data_removed_columns_sm.csv'),
+    d3.csv('data/data_inter.csv'),
     d3.json('data/world-110m.json')
   ]).then(data => {
     // Convert columns to numerical values
@@ -60,13 +60,13 @@ const chord = new ChordDiagram({
 
 const bubble_vio = new BubbleDiagram({
     parentElement: '#bubble-diagram-violent_events'
-}, data[0])
+}, dispatcher, data[0])
 const bubble_dem = new BubbleDiagram({
     parentElement: '#bubble-diagram-demonstration_events'
-}, data[0]);
+}, dispatcher, data[0]);
 const bubble_non = new BubbleDiagram({
     parentElement: '#bubble-diagram-non_violent_actions'
-}, data[0]);
+}, dispatcher, data[0]);
 
 d3.select('#country-selector').on('change', function() {
     let selected = d3.select(this).property('value');
@@ -97,11 +97,11 @@ d3.select('#country-selector').on('change', function() {
  })
  .catch(error => console.error(error));
 
-dispatcher.on('filteredInfoSourceEvent', selectedInfoSourceEvents => {
-    if (selectedInfoSourceEvents.length == 0) {
+dispatcher.on('filteredInfoSourceEvent', (selectedEvents, selectedInfoSource) => {
+    if (selectedEvents.length == 0 && selectedInfoSource.length == 0) {
         chord.data = data;
     } else {
-        chord.data = data.filter(d => selectedInfoSourceEvents.includes(d.GENERAL_EVENT_GROUP));
+        // chord.data = data.filter(d => selectedInfoSourceEvents.includes(d.GENERAL_EVENT_GROUP));
     }
     chord.updateVis();
 });

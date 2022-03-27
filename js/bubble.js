@@ -6,21 +6,23 @@ class BubbleDiagram {
    * @param {Object}
    * @param {Array}
    */
-   constructor(_config, _data) {
+   constructor(_config, _dispatcher, _data) {
     this.config = {
       parentElement: _config.parentElement,
       generalEventGroup: _config.parentElement.split("-")[2],
       className: 'bubble-diagram-' +  _config.generalEventGroup,
       containerWidth: 333,
       containerHeight: 333,
-      margin: {top: 30, right: 30, bottom: 30, left: 30},
+      margin: {top: 50, right: 30, bottom: 50, left: 30},
       tooltipPadding: 10,
       maxSize: 0,
       forceStrength: 0.03 // strength to apply to the position forces
     }
     this.fullData = _data;
     this.data = _data.filter((d) => d['GENERAL_EVENT_GROUP'] == this.config.generalEventGroup);
-    // this.dispatcher = _dispatcher
+    this.radius_min = 4;
+    this.radius_max = 80;
+    this.dispatcher = _dispatcher
     this.initVis();
   }
   
@@ -49,12 +51,8 @@ class BubbleDiagram {
         // note we have to ensure that size is a number
         const allGroupsSrc = d3.rollup(vis.fullData, v => v.length, d => d.GENERAL_EVENT_GROUP,d => d.SOURCE_SCALE)
         vis.allBubbles = this.createNodes(allGroupsSrc)
-        const maxSize = d3.max(vis.allBubbles, d => +d.size);
-
-        // size bubbles based on area
-        vis.radiusScale = d3.scaleSqrt()
-            .domain([0, maxSize])
-            .range([0, 80])
+        vis.event_num_max = d3.max(vis.allBubbles, d => +d.size);
+        vis.event_num_min = d3.min(vis.allBubbles, d => +d.size);
 
         // set up colour scale
         vis.fillColour = d3.scaleOrdinal()
@@ -65,9 +63,11 @@ class BubbleDiagram {
         vis.svg.append('text')
             .attr('class', 'axis-title')
             .attr('x', vis.width/2 + vis.config.margin.left)
-            .attr('y', 10)
+            .attr('y', vis.config.containerHeight - vis.config.margin.bottom/2)
             .attr('dy', '.71em')
-            .style('text-anchor', 'end')
+            .attr("font-weight",'bold')
+            .style("font-size", "1.5em")
+            .style('text-anchor', 'middle')
             .text(this.config.generalEventGroup.replace(/_/g,' '));
 
         this.updateVis()
@@ -82,8 +82,8 @@ class BubbleDiagram {
                 let node = {
                     name: key,
                     size: value,
-                    x: Math.random() * 900,
-                    y: Math.random() * 800
+                    x: Math.random() * 333 + this.radiusScale(value) + 2 * this.config.margin.left,
+                    y: Math.random() * 333 + this.radiusScale(value) + 2 * this.config.margin.top
                 }
                 myNodes.push(node)
             }
@@ -92,9 +92,21 @@ class BubbleDiagram {
         return myNodes;
     }
 
+    radiusScale(d) {
+        let vis = this;
+
+        d = Math.sqrt(d)
+        let min = Math.sqrt(vis.event_num_min)
+        let max = Math.sqrt(vis.event_num_max)
+        let radius = vis.radius_min + (d-min)/(max-min) * (vis.radius_max - vis.radius_min)
+        return radius
+    }
+
+
     // charge is dependent on size of the bubble, so bigger towards the middle
     charge(d) {
-        return Math.pow(d.size, 2.0) * 0.01
+       let forceSize = this.radiusScale(d.size)
+        return Math.pow(forceSize, 2.0) * 0.001
     }
   
     updateVis() {
@@ -105,7 +117,7 @@ class BubbleDiagram {
 
         // create a force simulation and add forces to it
         vis.simulation = d3.forceSimulation()
-            .force('charge', d3.forceManyBody().strength(this.charge))
+            .force('charge', d3.forceManyBody().strength(this.charge(vis)))
             // .force('center', d3.forceCenter(centre.x, centre.y))
             .force('x', d3.forceX().strength(vis.config.forceStrength).x(vis.centre.x))
             .force('y', d3.forceY().strength(vis.config.forceStrength).y(vis.centre.y))
@@ -134,10 +146,11 @@ class BubbleDiagram {
                     d3.select(this).classed('active', !isActive)
                         .style('stroke-width', 3 );
                     // Get the names of all active/filtered categories
-                    const selectedInfoSourceEvents = vis.svg.selectAll('.bubble.active').data().map(k => k.key);
+                    const selectedEvents = vis.config.generalEventGroup;
+                    const selectedInfoSource = vis.svg.selectAll('.bubble.active').data()[0]['name'];
                     // Call dispatcher and pass the event name, D3 event object,
                     // and our custom event data (selected category names)
-                    // vis.dispatcher.call('filteredInfoSourceEvent', event, selectedInfoSourceEvents);
+                    vis.dispatcher.call('filteredInfoSourceEvent', event, selectedEvents, selectedInfoSource);
                 })
 
         // set simulation's nodes to our newly created nodes array
