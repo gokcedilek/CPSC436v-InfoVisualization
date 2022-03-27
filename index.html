@@ -1,61 +1,88 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Political Violence in the Middle East</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css" />
     <link rel="shortcut icon" href="#" />
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
     <h1>Political Violence in the Middle East</h1>
 
-    Filter Countries: 
+    Filter Countries:
     <select id="country-selector">
-        <option selected="selected" value="All">All Countries</option>
-        <option value="Bahrain">Bahrain</option>
-        <option value="Iran">Iran</option>
-        <option value="Iraq">Iraq</option>
-        <option value="Israel">Israel</option>
-        <option value="Kuwait">Kuwait</option>
-        <option value="Lebanon">Lebanon</option>
-        <option value="Oman">Oman</option>
-        <option value="Palestine">Palestine</option>
-        <option value="Qatar">Qatar</option>
-        <option value="Saudi Arabia">Saudi Arabia</option>
-        <option value="Syria">Syria</option>
-        <option value="Turkey">Turkey</option>
-        <option value="United Arab Emirates">United Arab Emirates</option>
-        <option value="Yemen">Yemen</option>
+      <option selected="selected" value="All">All Countries</option>
+      <option value="Bahrain">Bahrain</option>
+      <option value="Iran">Iran</option>
+      <option value="Iraq">Iraq</option>
+      <option value="Israel">Israel</option>
+      <option value="Kuwait">Kuwait</option>
+      <option value="Lebanon">Lebanon</option>
+      <option value="Oman">Oman</option>
+      <option value="Palestine">Palestine</option>
+      <option value="Qatar">Qatar</option>
+      <option value="Saudi Arabia">Saudi Arabia</option>
+      <option value="Syria">Syria</option>
+      <option value="Turkey">Turkey</option>
+      <option value="United Arab Emirates">United Arab Emirates</option>
+      <option value="Yemen">Yemen</option>
     </select>
-    
-    <br> <br> <br>
-    
-    <svg id="symbol-map"></svg>
-    <svg id="chord-diagram"></svg>
-    <div id="info-source">
+
+    <br />
+
+    <div class="container">
+      <div class="container-row">
+        <svg id="symbol-map"></svg>
+        <svg id="chord-diagram"></svg>
+      </div>
+
+      <div id="info-source" class="container-row">
         <svg id="bubble-diagram-violent_events"></svg>
         <svg id="bubble-diagram-demonstration_events"></svg>
         <svg id="bubble-diagram-non_violent_actions"></svg>
-        <div class="legend">
-            <ul>
-                <li class="legend-btn" source="international"><span class="legend-symbol"></span>International</li>
-                <li class="legend-btn" source="national"><span class="legend-symbol"></span>National</li>
-                <li class="legend-btn" source="subnational"><span class="legend-symbol"></span>Subnational</li>
-                <li class="legend-btn" source="regional"><span class="legend-symbol"></span>Regional</li>
-                <li class="legend-btn" source="localPartner"><span class="legend-symbol"></span>Local partner</li>
-                <li class="legend-btn" source="newMedia"><span class="legend-symbol"></span>New media</li>
-                <li class="legend-btn" source="other"><span class="legend-symbol"></span>Other</li>
-            </ul>
-        </div>
-        <div id="tooltip"></div>
+        <!-- <div class="legend">
+        <ul>
+          <li class="legend-btn" source="international">
+            <span class="legend-symbol"></span>International
+          </li>
+          <li class="legend-btn" source="national">
+            <span class="legend-symbol"></span>National
+          </li>
+          <li class="legend-btn" source="subnational">
+            <span class="legend-symbol"></span>Subnational
+          </li>
+          <li class="legend-btn" source="regional">
+            <span class="legend-symbol"></span>Regional
+          </li>
+          <li class="legend-btn" source="localPartner">
+            <span class="legend-symbol"></span>Local partner
+          </li>
+          <li class="legend-btn" source="newMedia">
+            <span class="legend-symbol"></span>New media
+          </li>
+          <li class="legend-btn" source="other">
+            <span class="legend-symbol"></span>Other
+          </li>
+        </ul> -->
+        <!-- </div> -->
+      </div>
     </div>
 
+    <div id="tooltip"></div>
+    <div id="chord-tooltip"></div>
+
     <script src="js/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/d3-v6-tip@1.0.6/build/d3-v6-tip.js"></script>
+    <!-- <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/bumbeishvili/d3-tip-for-v6@4/d3-tip.min.css"
+    /> -->
     <script src="js/topojson.js"></script>
     <script src="js/main.js"></script>
     <script src="js/time.js"></script>
     <script src="js/symbol.js"></script>
     <script src="js/chord.js"></script>
+    <script src="js/barchart.js"></script>
     <script src="js/bubble.js"></script>
-</body>
+  </body>
 </html>
