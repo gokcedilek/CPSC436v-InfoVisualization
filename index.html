@@ -30,13 +30,17 @@
 
     <br />
 
-    <svg id="symbol-map"></svg>
-    <svg id="chord-diagram"></svg>
-    <div id="info-source">
-      <svg id="bubble-diagram-violent_events"></svg>
-      <svg id="bubble-diagram-demonstration_events"></svg>
-      <svg id="bubble-diagram-non_violent_actions"></svg>
-      <div class="legend">
+    <div class="container">
+      <div class="container-row">
+        <svg id="symbol-map"></svg>
+        <svg id="chord-diagram"></svg>
+      </div>
+
+      <div id="info-source" class="container-row">
+        <svg id="bubble-diagram-violent_events"></svg>
+        <svg id="bubble-diagram-demonstration_events"></svg>
+        <svg id="bubble-diagram-non_violent_actions"></svg>
+        <!-- <div class="legend">
         <ul>
           <li class="legend-btn" source="international">
             <span class="legend-symbol"></span>International
@@ -59,13 +63,12 @@
           <li class="legend-btn" source="other">
             <span class="legend-symbol"></span>Other
           </li>
-        </ul>
+        </ul> -->
+        <!-- </div> -->
       </div>
-      <div id="tooltip"></div>
     </div>
 
-    <!-- <div id="chord-arc-tooltip"></div> -->
-    <!--todo: remove after adding text labels-->
+    <div id="tooltip"></div>
     <div id="chord-tooltip"></div>
 
     <script src="js/d3.v6.min.js"></script>

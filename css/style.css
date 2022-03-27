@@ -1,29 +1,31 @@
+svg#symbol-map {
+  margin: 20px;
+}
+
+svg#chord-diagram {
+  margin: 20px;
+}
+
 #chord-tooltip {
   position: absolute;
   display: none;
   background: #fff;
-  /* border: 1px solid #ddd; */
   min-width: 100px;
   padding: 5px;
-  /* left: 100px;
-  top: 100px; */
-  left: 500px;
-  top: 580px;
+  left: 900px;
+  top: 250px;
 }
 
-/* .bar-chart-tooltip {
-  position: relative !important;
+.container-row {
+  display: flex;
+  width: 1200px;
+  margin: 0 auto;
 }
 
-#bar-chart-div {
-  position: relative;
+.container {
+  display: flex;
+  flex-direction: column;
 }
-
-#bar-chart-div svg {
-  position: absolute;
-  left: 500px;
-  bottom: 1350px;
-} */
 
 body {
   background: #fafcff;

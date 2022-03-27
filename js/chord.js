@@ -21,6 +21,7 @@ class ChordDiagram {
       },
     };
     this.data = _data;
+    this.filteredData = [];
     this.selectedActor = 0;
     this.dispatcher = _dispatcher;
     this.interCodeMap = {
@@ -33,6 +34,8 @@ class ChordDiagram {
       7: 'Civilians',
       8: 'External/Other Forces',
     };
+    this.eventType = '';
+    this.sourceScale = '';
 
     // change opacity
     this.chordColors = [
@@ -83,13 +86,41 @@ class ChordDiagram {
 
   updateVis() {
     let vis = this;
+    console.log('chord data length: ', vis.data.length);
+
     // Prepare data and scales
+
+    // filter by event type and source
+    if (vis.eventType !== '' && vis.sourceScale !== '') {
+      vis.filteredData = vis.data.filter(
+        (data) =>
+          data.GENERAL_EVENT_GROUP === vis.eventType &&
+          data.SOURCE_SCALE === vis.sourceScale
+      );
+    } else {
+      vis.filteredData = vis.data;
+    }
+
+    if (vis.selectedActor !== 0) {
+      vis.filteredData = vis.filteredData.filter(
+        (d) => d.INTER1 === vis.selectedActor
+      );
+    }
+    // const filteredChordData =
+    //   vis.selectedActor === 0
+    //     ? chordData
+    //     : chordData.filter((d) => d.source.index + 1 === vis.selectedActor);
+
+    console.log('filtered data: ', vis.filteredData);
 
     let matrix = new Array();
     for (let row = 0; row < 8; row++) {
       matrix[row] = new Array();
       for (let col = 0; col < 8; col++) {
-        const events = vis.data.filter(
+        // const events = vis.data.filter(
+        //   (data) => data.INTER1 == row + 1 && data.INTER2 == col + 1
+        // );
+        const events = vis.filteredData.filter(
           (data) => data.INTER1 == row + 1 && data.INTER2 == col + 1
         );
         matrix[row][col] = events.length;
@@ -210,25 +241,28 @@ class ChordDiagram {
       console.log('is selected: ', isSelected);
       if (isSelected) {
         vis.selectedActor = 0;
+        vis.dispatcher.call('filteredActorType', event, vis.selectedActor);
         vis.updateVis();
       } else {
         vis.selectedActor = d.index + 1;
+        console.log('selected actor: ', vis.selectedActor);
+        vis.dispatcher.call('filteredActorType', event, vis.selectedActor);
         vis.updateVis();
       }
     });
 
-    const filteredChordData =
-      vis.selectedActor === 0
-        ? chordData
-        : chordData.filter((d) => d.source.index + 1 === vis.selectedActor);
-    console.log('filtered arcs: ', filteredChordData);
+    // const filteredChordData =
+    //   vis.selectedActor === 0
+    //     ? chordData
+    //     : chordData.filter((d) => d.source.index + 1 === vis.selectedActor);
+    // console.log('filtered arcs: ', filteredChordData);
 
     const chordArcs = vis.chart
       // .append('g')
       // .join('g')
       .selectAll('.chord-arc')
-      // .data(chordData)
-      .data(filteredChordData, (d) => d.source.index)
+      .data(chordData)
+      // .data(filteredChordData, (d) => d.source.index)
       .join('path')
       .attr('class', 'chord-arc')
       .attr('d', d3.ribbon().radius(200))
@@ -238,7 +272,13 @@ class ChordDiagram {
 
     chordArcs
       .on('mouseover', function (event, d) {
-        const eventsOfActor = vis.data.filter(
+        // const eventsOfActor = vis.data.filter(
+        //   (data) =>
+        //     data.INTER1 == d.source.index + 1 &&
+        //     data.INTER2 == d.target.index + 1
+        // );
+        console.log('selected arc: ', d);
+        const eventsOfActor = vis.filteredData.filter(
           (data) =>
             data.INTER1 == d.source.index + 1 &&
             data.INTER2 == d.target.index + 1
@@ -261,7 +301,6 @@ class ChordDiagram {
         );
       })
       .on('mouseleave', function () {
-        // vis.barChartTooltip.hide();
         d3.select('#chord-tooltip').style('display', 'none');
         d3.select('#chord-tooltip-svg').remove();
       });

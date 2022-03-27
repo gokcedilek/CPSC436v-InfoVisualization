@@ -10,13 +10,17 @@ const violent_events = [
 const demonstration_events = ['Protests', 'Riots'];
 const non_violent_actions = ['Strategic developments'];
 
-const dispatcher = d3.dispatch('filteredInfoSourceEvent');
+const dispatcher = d3.dispatch('filteredInfoSourceEvent', 'filteredActorType');
+
+let chord;
+let bubble_vio;
+let bubble_dem;
+let bubble_non;
+// let data;
 
 // d3.csv('data/data_removed_columns.csv')
-Promise.all([
-    d3.csv('data/data_inter.csv'),
-    d3.json('data/world-110m.json')
-  ]).then(data => {
+Promise.all([d3.csv('data/data_inter.csv'), d3.json('data/world-110m.json')])
+  .then((data) => {
     // Convert columns to numerical values
     data[0].forEach((d) => {
       Object.keys(d).forEach((attr) => {
@@ -71,43 +75,35 @@ Promise.all([
       data[0],
       data[1]
     );
-    const chord = new ChordDiagram(
+    chord = new ChordDiagram(
       {
         parentElement: '#chord-diagram',
       },
-      data[0]
+      data[0],
+      dispatcher
     );
 
-<<<<<<< HEAD
-    const bubble_vio = new BubbleDiagram(
+    bubble_vio = new BubbleDiagram(
       {
         parentElement: '#bubble-diagram-violent_events',
       },
+      dispatcher,
       data[0]
     );
-    const bubble_dem = new BubbleDiagram(
+    bubble_dem = new BubbleDiagram(
       {
         parentElement: '#bubble-diagram-demonstration_events',
       },
+      dispatcher,
       data[0]
     );
-    const bubble_non = new BubbleDiagram(
+    bubble_non = new BubbleDiagram(
       {
         parentElement: '#bubble-diagram-non_violent_actions',
       },
+      dispatcher,
       data[0]
     );
-=======
-const bubble_vio = new BubbleDiagram({
-    parentElement: '#bubble-diagram-violent_events'
-}, dispatcher, data[0])
-const bubble_dem = new BubbleDiagram({
-    parentElement: '#bubble-diagram-demonstration_events'
-}, dispatcher, data[0]);
-const bubble_non = new BubbleDiagram({
-    parentElement: '#bubble-diagram-non_violent_actions'
-}, dispatcher, data[0]);
->>>>>>> 061eee45ed08427af12e70c1f7fdc03faa9680b7
 
     d3.select('#country-selector').on('change', function () {
       let selected = d3.select(this).property('value');
@@ -139,30 +135,40 @@ const bubble_non = new BubbleDiagram({
         );
         bubble_non.updateVis();
       }
+      // data = data[0];
     });
   })
   .catch((error) => console.error(error));
 
 // dispatcher.on('filterByActor', () => {});
 
-<<<<<<< HEAD
-dispatcher.on('filteredInfoSourceEvent', (selectedInfoSourceEvents) => {
-  if (selectedInfoSourceEvents.length == 0) {
-    chord.data = data;
-  } else {
-    chord.data = data.filter((d) =>
-      selectedInfoSourceEvents.includes(d.GENERAL_EVENT_GROUP)
-    );
-  }
-  chord.updateVis();
-});
-=======
-dispatcher.on('filteredInfoSourceEvent', (selectedEvents, selectedInfoSource) => {
-    if (selectedEvents.length == 0 && selectedInfoSource.length == 0) {
-        chord.data = data;
-    } else {
-        // chord.data = data.filter(d => selectedInfoSourceEvents.includes(d.GENERAL_EVENT_GROUP));
-    }
+dispatcher.on(
+  'filteredInfoSourceEvent',
+  (selectedEvents, selectedInfoSource) => {
+    console.log('selected events: ', selectedEvents);
+    console.log('selectedInfoSource: ', selectedInfoSource);
+    // if (selectedEvents === '' && selectedInfoSource.length === '') {
+    //   // chord.data = data;
+
+    // } else {
+    // chord.data = data.filter(d => selectedInfoSourceEvents.includes(d.GENERAL_EVENT_GROUP));
+    // chord.data = data.filter(
+    //   (d) =>
+    //     d.GENERAL_EVENT_GROUP === selectedEvents &&
+    //     d.SOURCE_SCALE === selectedInfoSource
+    // );
+    chord.eventType = selectedEvents;
+    chord.sourceScale = selectedInfoSource;
+    // }
     chord.updateVis();
+  }
+);
+
+dispatcher.on('filteredActorType', (selectedActor) => {
+  bubble_dem.selectedActor = selectedActor;
+  bubble_vio.selectedActor = selectedActor;
+  bubble_non.selectedActor = selectedActor;
+  bubble_dem.updateVis();
+  bubble_vio.updateVis();
+  bubble_non.updateVis();
 });
->>>>>>> 061eee45ed08427af12e70c1f7fdc03faa9680b7
