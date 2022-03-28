@@ -19,7 +19,7 @@ let bubble_non;
 // let data;
 
 // d3.csv('data/data_removed_columns.csv')
-Promise.all([d3.csv('data/data_inter.csv'), d3.json('data/world-110m.json')])
+Promise.all([d3.csv('data/data_inter_fatalities.csv'), d3.json('data/world-110m.json')])
   .then((data) => {
     // Convert columns to numerical values
     data[0].forEach((d) => {
