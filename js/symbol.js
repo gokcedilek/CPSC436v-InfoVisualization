@@ -36,15 +36,13 @@ class SymbolMap {
       vis.chart = vis.svg.append('g')
           .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
 
-      vis.projection = d3.geoConicConformal().center([43, 27])
+      vis.projection = d3.geoConicConformal().center([50, 25])
           .scale([vis.width/2*(Math.PI)])           // scale to fit size of svg group
           .translate([vis.width/2, vis.height/2]);  // ensure centered within svg group
       
       vis.geoPath = d3.geoPath().projection(vis.projection);
       vis.symbolScale = d3.scaleSqrt()
-      .range([0.5, 1]);
-      console.log(vis.symbolScale(1));
-      console.log(vis.symbolScale(50));
+      .range([1, 2]);
       this.updateVis();
     }
   
@@ -88,44 +86,20 @@ class SymbolMap {
 
 
       // // Tooltip event listeners
-      // geoSymbols
-      //     .on('mousemove', (event,d) => {
-      //       d3.select('#tooltip')
-      //         .style('display', 'block')
-      //         .style('left', `${event.pageX + vis.config.tooltipPadding}px`)   
-      //         .style('top', `${event.pageY + vis.config.tooltipPadding}px`)
-      //         .html(`
-      //           <div class="tooltip-title">${d.name}</div>
-      //           <div>${d.country}&nbsp; | &nbsp;${d.visitors} mio. visitors</div>
-      //         `);
-      //     })
-      //     .on('mouseleave', () => {
-      //       d3.select('#tooltip').style('display', 'none');
-      //     });
-
-      // // Append text labels to show the titles of all sights
-      // const geoSymbolLabels = vis.chart.selectAll('.geo-label')
-      //     .data(vis.data)
-      //   .join('text')
-      //     .attr('class', 'geo-label')
-      //     .attr('dy', '.35em')
-      //     .attr('text-anchor', 'middle')
-      //     .attr('x', d => vis.projection([d.lon,d.lat])[0])
-      //     .attr('y', d => (vis.projection([d.lon,d.lat])[1] - vis.symbolScale(d.visitors) - 8))
-      //     .text(d => d.name);
-
-      // // Append text labels with the number of visitors for two sights (to be used as a legend) 
-      // const geoSymbolVisitorLabels = vis.chart.selectAll('.geo-visitor-label')
-      //     .data(vis.data)
-      //   .join('text')
-      //     .filter(d => d.showLabel)
-      //     .attr('class', 'geo-visitor-label')
-      //     .attr('dy', '.35em')
-      //     .attr('text-anchor', 'middle')
-      //     .attr('x', d => vis.projection([d.lon,d.lat])[0])
-      //     .attr('y', d => (vis.projection([d.lon,d.lat])[1] + vis.symbolScale(d.visitors) + 12))
-      //     .text(d => `${d.visitors} mio. visitors`);
-
+      geoSymbols
+          .on('mousemove', (event, d) => {
+            d3.select('#symbol-tooltip')
+              .style('display', 'block')
+              .style('left', `${event.pageX + vis.config.tooltipPadding}px`)   
+              .style('top', `${event.pageY + vis.config.tooltipPadding}px`)
+              .html(`
+                <div>${d[0]}, ${d[1][0].COUNTRY}</div>
+                <div>Number of events: ${d[1].length}</div>
+              `);
+          })
+          .on('mouseleave', () => {
+            d3.select('#symbol-tooltip').style('display', 'none');
+          });
     }
   
   } 
