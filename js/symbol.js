@@ -43,8 +43,6 @@ class SymbolMap {
       vis.geoPath = d3.geoPath().projection(vis.projection);
       vis.symbolScale = d3.scaleSqrt()
       .range([1, 2]);
-      console.log(vis.symbolScale(1));
-      console.log(vis.symbolScale(50));
       this.updateVis();
     }
   

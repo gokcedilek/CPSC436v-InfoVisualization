@@ -106,15 +106,10 @@ Promise.all([d3.csv('data/data_inter_fatalities.csv'), d3.json('data/world-110m.
 
     d3.select('#time-slider').on('input', function () {
         let filtered = data[0];
-        console.log(filtered)
         let year = + this.value
+        
         d3.select('#time-value').text(year);
-        // console.log(year)
-        // console.log(data[0][0]['YEAR'] < year)
-        filtered = data[0].filter((d) => {
-            return d['YEAR'] <= year
-        });
-        console.log(filtered)
+        filtered = data[0].filter((d) => d['YEAR'] <= year);
 
         symbolMap.data = filtered;
         symbolMap.updateVis();
