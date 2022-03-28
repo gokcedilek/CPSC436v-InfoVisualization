@@ -5,13 +5,13 @@ class BarChart {
       containerWidth: 300,
       containerHeight: 250,
       margin: { top: 20, right: 30, bottom: 20, left: 50 },
+      tooltipPadding: 5,
+      textPadding: 1,
     };
     this.data = _data;
     this.sourceActor = sourceActor;
     this.targetActor = targetActor;
     this.initVis();
-
-    console.log('data: ', this.data);
   }
 
   initVis() {
@@ -71,6 +71,12 @@ class BarChart {
       (b) => b.YEAR
     );
 
+    vis.eventsPerYear = d3.rollups(
+      vis.data,
+      (a) => a.length,
+      (b) => b.YEAR
+    );
+
     vis.fatalitiesPerYear = vis.fatalitiesPerYear.map(([year, fatalities]) => ({
       year,
       fatalities,
@@ -78,7 +84,10 @@ class BarChart {
     const minYear = vis.fatalitiesPerYear[0].year;
     const maxYear =
       vis.fatalitiesPerYear[vis.fatalitiesPerYear.length - 1].year;
-    const maxFatalities = d3.max(vis.fatalitiesPerYear, (d) => d.fatalities);
+    const maxFatalities = Math.max(
+      100,
+      d3.max(vis.fatalitiesPerYear, (d) => d.fatalities)
+    );
 
     const numYears = maxYear - minYear + 1;
 
@@ -93,6 +102,7 @@ class BarChart {
       .padding(0.1);
     vis.yAxis = d3
       .axisLeft(vis.yAxisScale)
+      .ticks(5)
       .tickFormat((t) => t)
       .tickSizeOuter(0)
       .tickPadding(5);
@@ -117,9 +127,15 @@ class BarChart {
   renderVis() {
     let vis = this;
 
-    vis.tooltipSVGChart
-      .selectAll('.bar')
+    const barGroups = vis.tooltipSVGChart
+      .selectAll('.bar-group')
       .data(vis.fatalitiesPerYear)
+      .join('g')
+      .attr('class', 'bar-group');
+
+    barGroups
+      .selectAll('.bar')
+      .data((d) => [d])
       .join('rect')
       .attr('class', 'bar')
       .attr('x', (d) => vis.xAxisScale(d.year))
@@ -127,6 +143,16 @@ class BarChart {
       .attr('height', (d) => vis.height - vis.yAxisScale(d.fatalities))
       .attr('y', (d) => vis.yAxisScale(d.fatalities))
       .attr('fill', '#d1d7de');
+
+    barGroups
+      .selectAll('.bar-label')
+      .data((d) => [d])
+      .join('text')
+      .attr('class', 'bar-label')
+      .text((d) => d.fatalities)
+      .attr('x', (d) => vis.xAxisScale(d.year))
+      .attr('y', (d) => vis.yAxisScale(d.fatalities) - vis.config.textPadding)
+      .style('font-size', 11);
 
     vis.xAxisGroup.call(vis.xAxis);
     vis.yAxisGroup.call(vis.yAxis);
