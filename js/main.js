@@ -105,6 +105,41 @@ Promise.all([d3.csv('data/data_inter_fatalities.csv'), d3.json('data/world-110m.
       data[0]
     );
 
+    d3.select('#time-slider').on('input', function () {
+        let filtered = data[0];
+        console.log(filtered)
+        let year = + this.value
+        d3.select('#time-value').text(year);
+        // console.log(year)
+        // console.log(data[0][0]['YEAR'] < year)
+        filtered = data[0].filter((d) => {
+            return d['YEAR'] <= year
+        });
+        console.log(filtered)
+
+        symbolMap.data = filtered;
+        symbolMap.updateVis();
+
+        chord.data = filtered;
+        chord.updateVis();
+
+        bubble_vio.data = filtered.filter(
+            (d) => d['GENERAL_EVENT_GROUP'] == 'violent_events'
+          );
+          bubble_vio.updateVis();
+  
+          bubble_dem.data = filtered.filter(
+            (d) => d['GENERAL_EVENT_GROUP'] == 'demonstration_events'
+          );
+          bubble_dem.updateVis();
+  
+          bubble_non.data = filtered.filter(
+            (d) => d['GENERAL_EVENT_GROUP'] == 'non_violent_actions'
+          );
+          bubble_non.updateVis();
+
+    });
+
     d3.select('#country-selector').on('change', function () {
       let selected = d3.select(this).property('value');
       let filtered = data[0];
