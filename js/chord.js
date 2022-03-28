@@ -8,7 +8,7 @@ class ChordDiagram {
     this.config = {
       parentElement: _config.parentElement,
       containerWidth: 1000,
-      containerHeight: 800,
+      containerHeight: 600,
       margin: { top: 30, right: 30, bottom: 30, left: 30 },
       tooltipPadding: 5,
       legendWidth: 170,
@@ -37,17 +37,6 @@ class ChordDiagram {
     this.eventType = '';
     this.sourceScale = '';
 
-    // change opacity
-    this.chordColors = [
-      '#fc928b',
-      '#07a822',
-      '#5276f7',
-      '#ae94d4',
-      '#dbaa09',
-      '#b0b305',
-      '#f3b6fa',
-      '#48a4f0',
-    ];
     this.initVis();
   }
 
@@ -81,14 +70,25 @@ class ChordDiagram {
     vis.legend = vis.svg.append('g').attr('transform', `translate(50, 480)`);
     vis.legendData = Object.values(vis.interCodeMap);
 
+    vis.colorScale = d3
+      .scaleOrdinal()
+      .range([
+        '#fc928b',
+        '#07a822',
+        '#5276f7',
+        '#ae94d4',
+        '#dbaa09',
+        '#b0b305',
+        '#f3b6fa',
+        '#48a4f0',
+      ])
+      .domain([0, 7]);
+
     vis.updateVis();
   }
 
   updateVis() {
     let vis = this;
-    console.log('chord data length: ', vis.data.length);
-
-    // Prepare data and scales
 
     // filter by event type and source
     if (vis.eventType !== '' && vis.sourceScale !== '') {
@@ -103,23 +103,14 @@ class ChordDiagram {
 
     if (vis.selectedActor !== 0) {
       vis.filteredData = vis.filteredData.filter(
-        (d) => d.INTER1 === vis.selectedActor
+        (d) => d.INTER1 === vis.selectedActor || d.INTER2 === vis.selectedActor
       );
     }
-    // const filteredChordData =
-    //   vis.selectedActor === 0
-    //     ? chordData
-    //     : chordData.filter((d) => d.source.index + 1 === vis.selectedActor);
-
-    console.log('filtered data: ', vis.filteredData);
 
     let matrix = new Array();
     for (let row = 0; row < 8; row++) {
       matrix[row] = new Array();
       for (let col = 0; col < 8; col++) {
-        // const events = vis.data.filter(
-        //   (data) => data.INTER1 == row + 1 && data.INTER2 == col + 1
-        // );
         const events = vis.filteredData.filter(
           (data) => data.INTER1 == row + 1 && data.INTER2 == col + 1
         );
@@ -156,11 +147,15 @@ class ChordDiagram {
     legendGroups
       .append('rect')
       .attr('class', 'legend-icon')
-      .attr('fill', (_, i) => vis.chordColors[i])
+      .attr('fill', (d, _) => {
+        const colorIndex =
+          Object.keys(vis.interCodeMap).find(
+            (key) => vis.interCodeMap[key] === d
+          ) - 1;
+        return vis.colorScale(colorIndex);
+      })
       .attr('width', 10)
       .attr('height', 10)
-      // .attr('y', 0)
-      // .attr('x', (d, i) => i * 150);
       .attr('x', (d, i) => {
         if (i % 2 == 0) {
           return vis.config.legend.marginLeft;
@@ -178,8 +173,6 @@ class ChordDiagram {
     legendGroups
       .append('text')
       .attr('class', 'legend-label')
-      // .attr('x', (d, i) => i * 150 + 10)
-      // .attr('y', (d, i) => 10)
       .attr('x', (d, i) => {
         if (i % 2 == 0) {
           return vis.config.legend.marginLeft + vis.config.legend.textPadding;
@@ -196,98 +189,55 @@ class ChordDiagram {
       .text((d) => d);
 
     const chordNodeGroup = vis.chart
-      // .append('g')
-      // .join('g')
       .selectAll('.chord-node')
       .data(chordData.groups)
-      .join('g')
-      .attr('class', 'chord-node');
-
-    const chordNodes = chordNodeGroup
-      .append('path')
-      .attr('fill', (_, i) => vis.chordColors[i])
+      .join('path')
+      .attr('class', 'chord-node')
+      .attr('fill', (d) => vis.colorScale(d.index))
       .attr('stroke', 'black')
       .attr('d', d3.arc().innerRadius(200).outerRadius(210))
-      .attr('id', (_, i) => 'chord-node-id' + i);
+      .attr('stroke-width', (d) => {
+        if (d.index + 1 === vis.selectedActor) {
+          return 2;
+        } else {
+          return 1;
+        }
+      });
 
-    // chordNodeGroup
-    //   .append('text')
-    //   // .attr('dx', 3)
-    //   .attr('dy', (d, i) => {
-    //     if (d.value < 700) {
-    //       if (i % 2 == 0) {
-    //         return -20;
-    //       } else {
-    //         return -5;
-    //       }
-    //     } else {
-    //       return -5;
-    //     }
-    //   })
-    //   .attr('font-size', '0.65em')
-    //   .append('textPath')
-    //   // .attr('textLength', 40)
-    //   .attr('xlink:href', function (d) {
-    //     // return '#chord-node-id' + d.index;
-    //     return textId.href;
-    //   })
-    //   .attr('startOffset', (d) => d.startAngle * 210)
-    //   .text(function (d) {
-    //     return vis.interCodeMap[d.index + 1];
-    //   });
-
-    chordNodes.on('click', function (event, d) {
-      const isSelected = vis.selectedActor !== 0;
-      console.log('is selected: ', isSelected);
-      if (isSelected) {
+    chordNodeGroup.on('click', function (event, d) {
+      if (vis.selectedActor === d.index + 1) {
+        // unselect the selected actor
         vis.selectedActor = 0;
         vis.dispatcher.call('filteredActorType', event, vis.selectedActor);
         vis.updateVis();
       } else {
+        // select a new actor
         vis.selectedActor = d.index + 1;
-        console.log('selected actor: ', vis.selectedActor);
         vis.dispatcher.call('filteredActorType', event, vis.selectedActor);
         vis.updateVis();
       }
     });
 
-    // const filteredChordData =
-    //   vis.selectedActor === 0
-    //     ? chordData
-    //     : chordData.filter((d) => d.source.index + 1 === vis.selectedActor);
-    // console.log('filtered arcs: ', filteredChordData);
-
     const chordArcs = vis.chart
-      // .append('g')
-      // .join('g')
       .selectAll('.chord-arc')
       .data(chordData)
-      // .data(filteredChordData, (d) => d.source.index)
       .join('path')
       .attr('class', 'chord-arc')
       .attr('d', d3.ribbon().radius(200))
-      .attr('fill', (d) => vis.chordColors[d.source.index])
+      .attr('fill', (d) => vis.colorScale(d.source.index))
       .attr('stroke', 'black')
       .classed('selected', (d) => d.source.index + 1 === vis.selectedActor);
 
     chordArcs
       .on('mouseover', function (event, d) {
-        // const eventsOfActor = vis.data.filter(
-        //   (data) =>
-        //     data.INTER1 == d.source.index + 1 &&
-        //     data.INTER2 == d.target.index + 1
-        // );
-        console.log('selected arc: ', d);
-        const eventsOfActor = vis.filteredData.filter(
+        const events = vis.filteredData.filter(
           (data) =>
             data.INTER1 == d.source.index + 1 &&
             data.INTER2 == d.target.index + 1
         );
-        eventsOfActor.sort((a, b) => a.YEAR - b.YEAR);
-        console.log('d: ', d);
+        events.sort((a, b) => a.YEAR - b.YEAR);
         const sourceActor = vis.interCodeMap[d.source.index + 1];
         const targetActor = vis.interCodeMap[d.target.index + 1];
-        console.log('source: ', sourceActor, ' target: ', targetActor);
 
         d3.select('#chord-tooltip').style('display', 'block');
 
@@ -295,7 +245,7 @@ class ChordDiagram {
           {
             parentElement: '#chord-tooltip',
           },
-          eventsOfActor,
+          events,
           sourceActor,
           targetActor
         );

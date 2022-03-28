@@ -26,7 +26,7 @@ class BubbleDiagram {
     this.dispatcher = _dispatcher;
     this.selectedActor = 0;
     this.filteredData = [];
-    this.selectedBubble = '';
+    this.selectedBubble = {};
     this.initVis();
   }
 
@@ -113,9 +113,10 @@ class BubbleDiagram {
 
   createNodes(rawData) {
     let myNodes = [];
-    rawData.forEach((element) => {
-      for (const [key, value] of element.entries()) {
+    for (const [rawDataKey, rawDataValue] of rawData.entries()) {
+      for (const [key, value] of rawDataValue.entries()) {
         let node = {
+          event: rawDataKey,
           name: key,
           size: value,
           x:
@@ -129,8 +130,7 @@ class BubbleDiagram {
         };
         myNodes.push(node);
       }
-    });
-
+    }
     return myNodes;
   }
 
@@ -156,14 +156,11 @@ class BubbleDiagram {
     // Prepare data and scales
     let vis = this;
 
-    console.log('selected bubble: ', vis.selectedBubble);
-
     if (vis.selectedActor === 0) {
       vis.filteredData = vis.data;
     } else {
       vis.filteredData = vis.data.filter((d) => d.INTER1 === vis.selectedActor);
     }
-    console.log('actor: ', vis.selectedActor, ' filter:', vis.filteredData);
 
     let eventByGroupSrc = d3.rollup(
       vis.filteredData,
@@ -201,22 +198,27 @@ class BubbleDiagram {
     // Bind data to visual elements, update axes
     let vis = this;
     // bind nodes data to circle elements
-    console.log('nodes: ', vis.nodes);
     vis.bubbles = vis.svg
       .selectAll('.bubble')
-      .data(vis.nodes, (d) => d.id)
+      .data(vis.nodes)
       .join('circle')
       .classed('bubble', true)
       .attr('r', (d) => vis.radiusScale(d.size))
       .attr('fill', (d) => this.fillColour(d.name))
       .attr('cx', (d) => d.x)
       .attr('cy', (d) => d.y)
-      .classed('active', (d) => vis.selectedBubble === d.y)
+      .classed('active', (d) => {
+        return (
+          vis.selectedBubble.event === d.event &&
+          vis.selectedBubble.name === d.name
+        );
+      })
       .on('click', function (event, d) {
         const isActive = d3.select(this).classed('active');
-        d3.select(this).classed('active', !isActive).style('stroke-width', 3);
+        d3.select(this).classed('active', !isActive);
+        // .style('stroke-width', 3);
         if (isActive) {
-          vis.selectedBubble = '';
+          vis.selectedBubble = {};
           vis.dispatcher.call('filteredInfoSourceEvent', event, '', '');
         } else {
           // Get the names of all active/filtered categories
@@ -226,8 +228,7 @@ class BubbleDiagram {
           const selectedInfoSource = vis.svg
             .selectAll('.bubble.active')
             .data()[0]['name'];
-          console.log('d: ', d);
-          vis.selectedBubble = d.y;
+          vis.selectedBubble = { event: d.event, name: d.name };
           vis.dispatcher.call(
             'filteredInfoSourceEvent',
             event,
