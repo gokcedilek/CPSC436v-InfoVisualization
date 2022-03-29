@@ -17,15 +17,15 @@ class BubbleDiagram {
       maxSize: 0,
       forceStrength: 0.03, // strength to apply to the position forces
     };
-    this.fullData = _data;
+    this.fullData = _data; // the entire dataset
     this.data = _data.filter(
       (d) => d['GENERAL_EVENT_GROUP'] == this.config.generalEventGroup
-    );
+    ); // data specific to the event group of interest
     this.radius_min = 4;
     this.radius_max = 80;
     this.dispatcher = _dispatcher;
     this.selectedActor = 0;
-    this.filteredData = [];
+    this.filteredData = []; // data after filtering by the chord diagram
     this.selectedBubble = '';
     this.initVis();
   }
@@ -119,7 +119,7 @@ class BubbleDiagram {
           name: key,
           size: value,
           x:
-            Math.random() * 333 +
+            Math.random() * 333 + // 333 is chosen as it's a bit smaller than the size of the svg
             this.radiusScale(value) +
             2 * this.config.margin.left,
           y:
@@ -146,7 +146,7 @@ class BubbleDiagram {
     return radius;
   }
 
-  // charge is dependent on size of the bubble, so bigger towards the middle
+  // charge is dependent on size of the bubble, so that we can position bigger circles towards the middle
   charge(d) {
     let forceSize = this.radiusScale(d.size);
     return Math.pow(forceSize, 2.0) * 0.001;
@@ -155,8 +155,6 @@ class BubbleDiagram {
   updateVis() {
     // Prepare data and scales
     let vis = this;
-
-    console.log('selected bubble: ', vis.selectedBubble);
 
     if (vis.selectedActor === 0) {
       vis.filteredData = vis.data;
@@ -173,7 +171,7 @@ class BubbleDiagram {
     );
     vis.nodes = this.createNodes(eventByGroupSrc);
 
-    // create a force simulation and add forces to it
+    // create a force simulation and add forces to it to have the bigger circles at the middle
     vis.simulation = d3
       .forceSimulation()
       .force('charge', d3.forceManyBody().strength(this.charge(vis)))
@@ -188,7 +186,7 @@ class BubbleDiagram {
       )
       .force(
         'collision',
-        d3.forceCollide().radius((d) => this.radiusScale(d.size) + 1)
+        d3.forceCollide().radius((d) => this.radiusScale(d.size) + 1) // to prevent bubbles overlapping each other
       );
 
     // force simulation starts up automatically, which we don't want as there aren't any nodes yet
@@ -201,7 +199,6 @@ class BubbleDiagram {
     // Bind data to visual elements, update axes
     let vis = this;
     // bind nodes data to circle elements
-    console.log('nodes: ', vis.nodes);
     vis.bubbles = vis.svg
       .selectAll('.bubble')
       .data(vis.nodes, (d) => d.id)
@@ -238,12 +235,10 @@ class BubbleDiagram {
       });
 
     // set simulation's nodes to our newly created nodes array
-    // simulation starts running automatically once nodes are set
     vis.simulation.nodes(vis.nodes).on('tick', ticked).restart();
 
     // callback function called after every tick of the force simulation
-    // here we do the actual repositioning of the circles based on current x and y value of their bound node data
-    // x and y values are modified by the force simulation
+    // the force simulation in the simulation will be used to reposition the x and y
     function ticked() {
       vis.bubbles.attr('cx', (d) => d.x).attr('cy', (d) => d.y);
     }
