@@ -16,6 +16,16 @@ svg#chord-diagram {
   top: 250px;
 }
 
+#symbol-tooltip {
+  position: absolute;
+  display: none;
+  background: #fff;
+  min-width: 100px;
+  padding: 5px;
+  left: 900px;
+  top: 250px;
+}
+
 .container-row {
   display: flex;
   width: 1200px;

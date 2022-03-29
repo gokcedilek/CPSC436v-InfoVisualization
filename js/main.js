@@ -16,10 +16,9 @@ let chord;
 let bubble_vio;
 let bubble_dem;
 let bubble_non;
-// let data;
 
 // d3.csv('data/data_removed_columns.csv')
-Promise.all([d3.csv('data/data_inter.csv'), d3.json('data/world-110m.json')])
+Promise.all([d3.csv('data/data_inter_fatalities.csv'), d3.json('data/world-110m.json')])
   .then((data) => {
     // Convert columns to numerical values
     data[0].forEach((d) => {
@@ -105,6 +104,36 @@ Promise.all([d3.csv('data/data_inter.csv'), d3.json('data/world-110m.json')])
       data[0]
     );
 
+    d3.select('#time-slider').on('input', function () {
+        let filtered = data[0];
+        let year = + this.value
+        
+        d3.select('#time-value').text(year);
+        filtered = data[0].filter((d) => d['YEAR'] <= year);
+
+        symbolMap.data = filtered;
+        symbolMap.updateVis();
+
+        chord.data = filtered;
+        chord.updateVis();
+
+        bubble_vio.data = filtered.filter(
+            (d) => d['GENERAL_EVENT_GROUP'] == 'violent_events'
+          );
+          bubble_vio.updateVis();
+  
+          bubble_dem.data = filtered.filter(
+            (d) => d['GENERAL_EVENT_GROUP'] == 'demonstration_events'
+          );
+          bubble_dem.updateVis();
+  
+          bubble_non.data = filtered.filter(
+            (d) => d['GENERAL_EVENT_GROUP'] == 'non_violent_actions'
+          );
+          bubble_non.updateVis();
+
+    });
+
     d3.select('#country-selector').on('change', function () {
       let selected = d3.select(this).property('value');
       let filtered = data[0];
@@ -135,31 +164,15 @@ Promise.all([d3.csv('data/data_inter.csv'), d3.json('data/world-110m.json')])
         );
         bubble_non.updateVis();
       }
-      // data = data[0];
     });
   })
   .catch((error) => console.error(error));
 
-// dispatcher.on('filterByActor', () => {});
-
 dispatcher.on(
   'filteredInfoSourceEvent',
   (selectedEvents, selectedInfoSource) => {
-    console.log('selected events: ', selectedEvents);
-    console.log('selectedInfoSource: ', selectedInfoSource);
-    // if (selectedEvents === '' && selectedInfoSource.length === '') {
-    //   // chord.data = data;
-
-    // } else {
-    // chord.data = data.filter(d => selectedInfoSourceEvents.includes(d.GENERAL_EVENT_GROUP));
-    // chord.data = data.filter(
-    //   (d) =>
-    //     d.GENERAL_EVENT_GROUP === selectedEvents &&
-    //     d.SOURCE_SCALE === selectedInfoSource
-    // );
     chord.eventType = selectedEvents;
     chord.sourceScale = selectedInfoSource;
-    // }
     chord.updateVis();
   }
 );
