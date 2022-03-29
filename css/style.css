@@ -88,10 +88,11 @@ body {
   stroke-width: 4px;
 }
 .legend {
-  margin: 0px 0;
+  margin-top: 2%;
   list-style: none;
   padding: 0;
-  width: 1000px;
+  width: 150px;
+  font-size: 14px;
 }
 ul li {
   float: left;
@@ -99,21 +100,23 @@ ul li {
 }
 ul {
   list-style-type: disc;
-  -webkit-columns: 8;
-  -moz-columns: 8;
-  columns: 8;
+  -webkit-columns: 1;
+  -moz-columns: 1;
+  columns: 1;
   list-style-position: inside;
+  padding-inline-start: 10px;
 }
 .legend-btn {
   display: inline-block;
-  margin: 0;
+  margin: 5px;
   transition: all ease-in-out 200ms;
   border-color: #333333;
 }
 .legend-symbol {
   width: 12px;
   height: 12px;
-  margin-right: 3px;
+  margin-right: 10px;
+  border-radius: 20px;
   display: inline-block;
   border-color: #333333;
 }
