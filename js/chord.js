@@ -69,14 +69,14 @@ class ChordDiagram {
     vis.colorScale = d3
       .scaleOrdinal()
       .range([
-        '#fc928b',
-        '#07a822',
-        '#5276f7',
-        '#ae94d4',
-        '#dbaa09',
-        '#b0b305',
-        '#f3b6fa',
-        '#48a4f0',
+        '#b5a5d5',
+        '#ffa3b1',
+        '#e5aa7a',
+        '#f5e49c',
+        '#546d8e',
+        '#d3f9bc',
+        '#9dbb61',
+        '#99d9ea',
       ])
       .domain([0, 7]);
 

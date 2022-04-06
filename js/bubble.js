@@ -10,9 +10,9 @@ class BubbleDiagram {
       parentElement: _config.parentElement,
       generalEventGroup: _config.parentElement.split('-')[2],
       className: 'bubble-diagram-' + _config.generalEventGroup,
-      containerWidth: 350,
-      containerHeight: 350,
-      margin: { top: 50, right: 30, bottom: 50, left: 30 },
+      containerWidth: 250,
+      containerHeight: 180,
+      margin: { top: 20, right: 30, bottom: 20, left: 30 },
       tooltipPadding: 10,
       maxSize: 0,
       forceStrength: 0.03, // strength to apply to the position forces
@@ -21,8 +21,8 @@ class BubbleDiagram {
     this.data = _data.filter(
       (d) => d['GENERAL_EVENT_GROUP'] == this.config.generalEventGroup
     ); // data specific to the event group of interest
-    this.radius_min = 4;
-    this.radius_max = 80;
+    this.radius_min = 2;
+    this.radius_max = 40;
     this.dispatcher = _dispatcher;
     this.selectedActor = 0;
     this.filteredData = [];
@@ -49,7 +49,8 @@ class BubbleDiagram {
       .select(vis.config.parentElement)
       .attr('width', vis.config.containerWidth)
       .attr('height', vis.config.containerHeight)
-      .attr('class', vis.config.className);
+      .attr('class', vis.config.className)
+      .attr("style", "outline: thin solid grey;");
 
     // Append group element that will contain our actual chart
     // and position it according to the given margin config
@@ -88,26 +89,26 @@ class BubbleDiagram {
         'Other',
       ])
       .range([
-        '#FF6B6B',
-        '#FFD93D',
-        '#4350fa',
-        '#3D9970',
-        '#c300eb',
-        '#8BDB81',
+        '#6f3198',
+        '#2f3699',
+        '#22b14c',
+        '#ffc20e',
+        '#ff7e00',
+        '#ed1c24',
         '#AAAAAA',
       ]);
 
     // Append axis title
-    vis.svg
-      .append('text')
-      .attr('class', 'axis-title')
-      .attr('x', vis.width / 2 + vis.config.margin.left)
-      .attr('y', vis.config.containerHeight - vis.config.margin.bottom / 2)
-      .attr('dy', '.71em')
-      .attr('font-weight', 'bold')
-      .style('font-size', '1.5em')
-      .style('text-anchor', 'middle')
-      .text(this.config.generalEventGroup.replace(/_/g, ' '));
+    // vis.svg
+    //   .append('text')
+    //   .attr('class', 'axis-title')
+    //   .attr('x', vis.width / 2 + vis.config.margin.left)
+    //   .attr('y', vis.config.containerHeight - vis.config.margin.bottom / 2)
+    //   .attr('dy', '.71em')
+    //   .attr('font-weight', 'bold')
+    //   .style('font-size', '1.5em')
+    //   .style('text-anchor', 'middle')
+    //   .text(this.config.generalEventGroup.replace(/_/g, ' '));
 
     this.updateVis();
   }

@@ -1,3 +1,10 @@
+h3{
+  margin: 0px;
+  margin-block-start: 0em;
+  margin-block-end: 0em;
+  text-align: center;
+}
+
 svg#symbol-map {
   margin: 20px;
 }
@@ -122,7 +129,8 @@ body {
   stroke-width: 4px;
 }
 .legend {
-  margin-top: 2%;
+  margin-top: 5%;
+  margin-left: 5px;
   list-style: none;
   padding: 0;
   width: 150px;
@@ -155,22 +163,22 @@ ul {
   border-color: #333333;
 }
 .legend-btn[source='international'] .legend-symbol {
-  background: #ffd93d;
+  background: #2f3699;
 }
 .legend-btn[source='national'] .legend-symbol {
-  background: #4350fa;
+  background: #22b14c;
 }
 .legend-btn[source='subnational'] .legend-symbol {
-  background: #3d9970;
+  background: #ffc20e;
 }
 .legend-btn[source='regional'] .legend-symbol {
-  background: #ff6b6b;
+  background: #6f3198;
 }
 .legend-btn[source='localPartner'] .legend-symbol {
-  background: #8bdb81;
+  background: #ed1c24;
 }
 .legend-btn[source='newMedia'] .legend-symbol {
-  background: #c300eb;
+  background: #ff7e00;
 }
 .legend-btn[source='other'] .legend-symbol {
   background: #aaaaaa;
