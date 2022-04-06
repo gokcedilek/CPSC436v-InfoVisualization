@@ -9,83 +9,112 @@
   <body>
     <h1>Political Violence in the Middle East</h1>
 
-    Filter Countries:
-    <select id="country-selector">
-      <option selected="selected" value="All">All Countries</option>
-      <option value="Bahrain">Bahrain</option>
-      <option value="Iran">Iran</option>
-      <option value="Iraq">Iraq</option>
-      <option value="Israel">Israel</option>
-      <option value="Kuwait">Kuwait</option>
-      <option value="Lebanon">Lebanon</option>
-      <option value="Oman">Oman</option>
-      <option value="Palestine">Palestine</option>
-      <option value="Qatar">Qatar</option>
-      <option value="Saudi Arabia">Saudi Arabia</option>
-      <option value="Syria">Syria</option>
-      <option value="Turkey">Turkey</option>
-      <option value="United Arab Emirates">United Arab Emirates</option>
-      <option value="Yemen">Yemen</option>
-    </select>
-
     <br />
-    
-    <div>
-      <label for="time-slider">Filter time: <span id="time-value">2022</span></label>
-      <input type="range" min="2015" value="2022" max="2022" id="time-slider">
-    </div>
-    
+
     <br />
 
     <div class="container">
-      <div class="container-row">
-        <svg id="symbol-map"></svg>
-        <svg id="chord-diagram"></svg>
+      <div class="container-columns">
+        <div id="info-source" class="container-column">
+          <svg id="bubble-diagram-violent_events"></svg>
+          <svg id="bubble-diagram-demonstration_events"></svg>
+          <svg id="bubble-diagram-non_violent_actions"></svg>
+        </div>
+        <div class="container-column map-column">
+          <div class="filter-container">
+            <span>Filter Countries</span>
+            <span>
+              <select id="country-selector">
+                <option selected="selected" value="All">All Countries</option>
+                <option value="Bahrain">Bahrain</option>
+                <option value="Iran">Iran</option>
+                <option value="Iraq">Iraq</option>
+                <option value="Israel">Israel</option>
+                <option value="Kuwait">Kuwait</option>
+                <option value="Lebanon">Lebanon</option>
+                <option value="Oman">Oman</option>
+                <option value="Palestine">Palestine</option>
+                <option value="Qatar">Qatar</option>
+                <option value="Saudi Arabia">Saudi Arabia</option>
+                <option value="Syria">Syria</option>
+                <option value="Turkey">Turkey</option>
+                <option value="United Arab Emirates">
+                  United Arab Emirates
+                </option>
+                <option value="Yemen">Yemen</option>
+              </select>
+            </span>
+          </div>
+
+          <div class="filter-container">
+            <label for="time-slider"
+              >Filter time: <span id="time-value">2022</span></label
+            >
+            <input
+              type="range"
+              min="2015"
+              value="2022"
+              max="2022"
+              id="time-slider"
+            />
+          </div>
+          <svg id="symbol-map"></svg>
+          <div class="description-container">
+            <div>
+              <span class="description-arrow">&#8592;</span>
+              <p class="description">
+                Click on a bubble in the bubble diagram to filter the chord
+                diagram by event type and source type!
+              </p>
+            </div>
+            <div>
+              <span class="description-arrow">&#8594;</span>
+              <p class="description">
+                Click on a segment in the chord diagram to filter the bubble
+                diagram by event actor!
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="container-column bubble-column">
+          <div id="chord-tooltip"></div>
+          <svg id="chord-diagram"></svg>
+        </div>
       </div>
 
-      <div id="info-source" class="container-row">
-        <svg id="bubble-diagram-violent_events"></svg>
-        <svg id="bubble-diagram-demonstration_events"></svg>
-        <svg id="bubble-diagram-non_violent_actions"></svg>
-        <div class="legend">
-          <ul>
-            <li class="legend-btn" source="international">
-              <span class="legend-symbol"></span>International
-            </li>
-            <li class="legend-btn" source="national">
-              <span class="legend-symbol"></span>National
-            </li>
-            <li class="legend-btn" source="subnational">
-              <span class="legend-symbol"></span>Subnational
-            </li>
-            <li class="legend-btn" source="regional">
-              <span class="legend-symbol"></span>Regional
-            </li>
-            <li class="legend-btn" source="localPartner">
-              <span class="legend-symbol"></span>Local partner
-            </li>
-            <li class="legend-btn" source="newMedia">
-              <span class="legend-symbol"></span>New media
-            </li>
-            <li class="legend-btn" source="other">
-              <span class="legend-symbol"></span>Other
-            </li>
-          </ul>
-        </div>
+      <div class="legend">
+        <ul>
+          <li class="legend-btn" source="international">
+            <span class="legend-symbol"></span>International
+          </li>
+          <li class="legend-btn" source="national">
+            <span class="legend-symbol"></span>National
+          </li>
+          <li class="legend-btn" source="subnational">
+            <span class="legend-symbol"></span>Subnational
+          </li>
+          <li class="legend-btn" source="regional">
+            <span class="legend-symbol"></span>Regional
+          </li>
+          <li class="legend-btn" source="localPartner">
+            <span class="legend-symbol"></span>Local partner
+          </li>
+          <li class="legend-btn" source="newMedia">
+            <span class="legend-symbol"></span>New media
+          </li>
+          <li class="legend-btn" source="other">
+            <span class="legend-symbol"></span>Other
+          </li>
+        </ul>
       </div>
     </div>
 
     <div id="tooltip"></div>
-    <div id="chord-tooltip"></div>
     <div id="symbol-tooltip"></div>
     <div id="barchart-tooltip"></div>
 
     <script src="js/d3.v6.min.js"></script>
     <script src="https://unpkg.com/d3-v6-tip@1.0.6/build/d3-v6-tip.js"></script>
-    <!-- <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/gh/bumbeishvili/d3-tip-for-v6@4/d3-tip.min.css"
-    /> -->
     <script src="js/topojson.js"></script>
     <script src="js/main.js"></script>
     <script src="js/time.js"></script>

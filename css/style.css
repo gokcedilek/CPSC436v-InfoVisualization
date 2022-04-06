@@ -4,16 +4,21 @@ svg#symbol-map {
 
 svg#chord-diagram {
   margin: 20px;
+  margin-top: 150px;
 }
 
 #chord-tooltip {
   position: absolute;
   display: none;
   background: #fff;
-  min-width: 100px;
+  width: 100px;
   padding: 5px;
-  left: 900px;
-  top: 250px;
+  left: 1000px;
+  top: 0px;
+  height: 100px;
+  margin-top: 20px;
+  font-family: sans-serif;
+  font-size: 12px;
 }
 
 #symbol-tooltip {
@@ -37,8 +42,37 @@ svg#chord-diagram {
   flex-direction: column;
 }
 
+.container-columns {
+  display: flex;
+  margin: 0 auto;
+}
+
+.bubble-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.map-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-container {
+  padding: 10px;
+}
+
+.description-arrow {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+text.bar-label {
+  font-size: 10px !important;
+}
+
 body {
   background: #fafcff;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .geo-path {

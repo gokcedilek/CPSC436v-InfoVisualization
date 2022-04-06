@@ -11,7 +11,7 @@ class ChordDiagram {
       containerHeight: 600,
       margin: { top: 30, right: 30, bottom: 30, left: 30 },
       tooltipPadding: 5,
-      legendWidth: 170,
+      legendWidth: 210,
       legendHeight: 8,
       legend: {
         marginLeft: 5,
@@ -41,7 +41,7 @@ class ChordDiagram {
   }
 
   initVis() {
-    // Create SVG area, initialize scales and axes
+    // define chord dimensions
     let vis = this;
 
     vis.width =
@@ -59,17 +59,13 @@ class ChordDiagram {
       .attr('width', vis.config.containerWidth)
       .attr('height', vis.config.containerHeight);
 
-    // vis.chart = vis.svg
-    //   .append('g')
-    //   .attr(
-    //     'transform',
-    //     `translate(${vis.config.margin.left},${vis.config.margin.top})`
-    //   );
-    vis.chart = vis.svg.append('g').attr('transform', `translate(250,250)`);
+    vis.chart = vis.svg.append('g').attr('transform', 'translate(250,250)');
 
-    vis.legend = vis.svg.append('g').attr('transform', `translate(50, 480)`);
+    // define chord legend
+    vis.legend = vis.svg.append('g').attr('transform', 'translate(50, 480)');
     vis.legendData = Object.values(vis.interCodeMap);
 
+    // define chord color scale
     vis.colorScale = d3
       .scaleOrdinal()
       .range([
@@ -90,7 +86,7 @@ class ChordDiagram {
   updateVis() {
     let vis = this;
 
-    // filter by event type and source
+    // filter by event type and source (triggered by the bubble diagram)
     if (vis.eventType !== '' && vis.sourceScale !== '') {
       vis.filteredData = vis.data.filter(
         (data) =>
@@ -101,12 +97,14 @@ class ChordDiagram {
       vis.filteredData = vis.data;
     }
 
+    // filter by selected actor, if there is one
     if (vis.selectedActor !== 0) {
       vis.filteredData = vis.filteredData.filter(
         (d) => d.INTER1 === vis.selectedActor || d.INTER2 === vis.selectedActor
       );
     }
 
+    // create the chord diagram data matrix using INTER1 (actor 1) & INTER2 (actor 2)
     let matrix = new Array();
     for (let row = 0; row < 8; row++) {
       matrix[row] = new Array();
@@ -123,20 +121,10 @@ class ChordDiagram {
   }
 
   renderVis() {
-    // Bind data to visual elements, update axes
     let vis = this;
     const chordData = d3.chord().padAngle(0.05)(vis.matrix);
 
-    // const textId = { id: 0, href: new URL('#0', window.location) };
-    // vis.chart
-    //   .append('path')
-    //   .attr('id', textId.id)
-    //   .attr('fill', 'none')
-    //   .attr(
-    //     'd',
-    //     d3.arc()({ outerRadius: 210, startAngle: 0, endAngle: 2 * Math.PI })
-    //   );
-
+    // append chord legend
     const legendGroups = vis.legend
       .selectAll('legend-item')
       .data(vis.legendData)
@@ -188,6 +176,7 @@ class ChordDiagram {
       })
       .text((d) => d);
 
+    // append chord nodes
     const chordNodeGroup = vis.chart
       .selectAll('.chord-node')
       .data(chordData.groups)
@@ -204,6 +193,7 @@ class ChordDiagram {
         }
       });
 
+    // click handler to select/unselect an actor
     chordNodeGroup.on('click', function (event, d) {
       if (vis.selectedActor === d.index + 1) {
         // unselect the selected actor
@@ -218,6 +208,7 @@ class ChordDiagram {
       }
     });
 
+    // append chord arcs
     const chordArcs = vis.chart
       .selectAll('.chord-arc')
       .data(chordData)
@@ -228,29 +219,30 @@ class ChordDiagram {
       .attr('stroke', 'black')
       .classed('selected', (d) => d.source.index + 1 === vis.selectedActor);
 
+    // hover handler to show/hide a tooltip
     chordArcs
       .on('mouseover', function (event, d) {
+        // find the events that belong to this arc
         const events = vis.filteredData.filter(
           (data) =>
             data.INTER1 == d.source.index + 1 &&
             data.INTER2 == d.target.index + 1
         );
         events.sort((a, b) => a.YEAR - b.YEAR);
-        const sourceActor = vis.interCodeMap[d.source.index + 1];
-        const targetActor = vis.interCodeMap[d.target.index + 1];
 
+        // show the tooltip
         d3.select('#chord-tooltip').style('display', 'block');
 
+        // append the bar chart to the tooltip
         const barChart = new BarChart(
           {
             parentElement: '#chord-tooltip',
           },
-          events,
-          sourceActor,
-          targetActor
+          events
         );
       })
       .on('mouseleave', function () {
+        // show the tooltip
         d3.select('#chord-tooltip').style('display', 'none');
         d3.select('#chord-tooltip-svg').remove();
       });
