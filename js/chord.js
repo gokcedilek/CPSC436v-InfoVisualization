@@ -80,6 +80,8 @@ class ChordDiagram {
       ])
       .domain([0, 7]);
 
+    vis.renderLegend();
+
     vis.updateVis();
   }
 
@@ -120,19 +122,15 @@ class ChordDiagram {
     vis.renderVis();
   }
 
-  renderVis() {
+  renderLegend() {
     let vis = this;
-    const chordData = d3.chord().padAngle(0.05)(vis.matrix);
-
-    // append chord legend
-    const legendGroups = vis.legend
-      .selectAll('legend-item')
-      .data(vis.legendData)
-      .enter()
-      .append('g')
+    const legend = vis.legend
+      .selectAll('.legend-item')
+      .data(vis.legendData, (d) => d)
+      .join((enter) => enter.append('g'))
       .attr('class', 'legend-item');
 
-    legendGroups
+    legend
       .append('rect')
       .attr('class', 'legend-icon')
       .attr('fill', (d, _) => {
@@ -158,7 +156,7 @@ class ChordDiagram {
         );
       });
 
-    legendGroups
+    legend
       .append('text')
       .attr('class', 'legend-label')
       .attr('x', (d, i) => {
@@ -175,6 +173,11 @@ class ChordDiagram {
         );
       })
       .text((d) => d);
+  }
+
+  renderVis() {
+    let vis = this;
+    const chordData = d3.chord().padAngle(0.05)(vis.matrix);
 
     // append chord nodes
     const chordNodeGroup = vis.chart
