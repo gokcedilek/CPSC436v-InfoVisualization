@@ -7,7 +7,7 @@ class ChordDiagram {
   constructor(_config, _data, _dispatcher) {
     this.config = {
       parentElement: _config.parentElement,
-      containerWidth: 1000,
+      containerWidth: 900,
       containerHeight: 600,
       margin: { top: 30, right: 30, bottom: 30, left: 30 },
       tooltipPadding: 5,
@@ -62,7 +62,7 @@ class ChordDiagram {
     vis.chart = vis.svg.append('g').attr('transform', 'translate(250,250)');
 
     // define chord legend
-    vis.legend = vis.svg.append('g').attr('transform', 'translate(50, 480)');
+    vis.legend = vis.svg.append('g').attr('transform', 'translate(70, 460)');
     vis.legendData = Object.values(vis.interCodeMap);
 
     // define chord color scale
@@ -201,12 +201,20 @@ class ChordDiagram {
       if (vis.selectedActor === d.index + 1) {
         // unselect the selected actor
         vis.selectedActor = 0;
-        vis.dispatcher.call('filteredActorType', event, vis.selectedActor);
+        vis.dispatcher.call(
+          'filteredActorTypeBubble',
+          event,
+          vis.selectedActor
+        );
         vis.updateVis();
       } else {
         // select a new actor
         vis.selectedActor = d.index + 1;
-        vis.dispatcher.call('filteredActorType', event, vis.selectedActor);
+        vis.dispatcher.call(
+          'filteredActorTypeBubble',
+          event,
+          vis.selectedActor
+        );
         vis.updateVis();
       }
     });
@@ -231,23 +239,10 @@ class ChordDiagram {
             data.INTER1 == d.source.index + 1 &&
             data.INTER2 == d.target.index + 1
         );
-        events.sort((a, b) => a.YEAR - b.YEAR);
-
-        // show the tooltip
-        d3.select('#chord-tooltip').style('display', 'block');
-
-        // append the bar chart to the tooltip
-        const barChart = new BarChart(
-          {
-            parentElement: '#chord-tooltip',
-          },
-          events
-        );
+        vis.dispatcher.call('filteredActorTypeBarChart', event, events);
       })
       .on('mouseleave', function () {
-        // show the tooltip
-        d3.select('#chord-tooltip').style('display', 'none');
-        d3.select('#chord-tooltip-svg').remove();
+        vis.dispatcher.call('filteredActorTypeBarChart', event, []);
       });
   }
 }
