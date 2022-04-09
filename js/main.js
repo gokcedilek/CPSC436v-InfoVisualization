@@ -129,6 +129,9 @@ Promise.all([
       chord.data = filtered;
       chord.updateVis();
 
+      barchart.data = filtered;
+      barchart.updateVis();
+
       bubble_vio.data = filtered.filter(
         (d) => d['GENERAL_EVENT_GROUP'] == 'violent_events'
       );
@@ -159,6 +162,9 @@ Promise.all([
 
         chord.data = filtered;
         chord.updateVis();
+
+        barchart.data = filtered;
+        barchart.updateVis();
 
         bubble_vio.data = filtered.filter(
           (d) => d['GENERAL_EVENT_GROUP'] == 'violent_events'
