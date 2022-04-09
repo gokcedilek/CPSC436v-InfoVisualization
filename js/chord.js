@@ -7,7 +7,7 @@ class ChordDiagram {
   constructor(_config, _data, _dispatcher) {
     this.config = {
       parentElement: _config.parentElement,
-      containerWidth: 1000,
+      containerWidth: 900,
       containerHeight: 600,
       margin: { top: 30, right: 30, bottom: 30, left: 30 },
       tooltipPadding: 5,
@@ -62,7 +62,7 @@ class ChordDiagram {
     vis.chart = vis.svg.append('g').attr('transform', 'translate(250,250)');
 
     // define chord legend
-    vis.legend = vis.svg.append('g').attr('transform', 'translate(50, 480)');
+    vis.legend = vis.svg.append('g').attr('transform', 'translate(70, 460)');
     vis.legendData = Object.values(vis.interCodeMap);
 
     // define chord color scale
@@ -79,6 +79,8 @@ class ChordDiagram {
         '#48a4f0',
       ])
       .domain([0, 7]);
+
+    vis.renderLegend();
 
     vis.updateVis();
   }
@@ -120,19 +122,15 @@ class ChordDiagram {
     vis.renderVis();
   }
 
-  renderVis() {
+  renderLegend() {
     let vis = this;
-    const chordData = d3.chord().padAngle(0.05)(vis.matrix);
-
-    // append chord legend
-    const legendGroups = vis.legend
-      .selectAll('legend-item')
-      .data(vis.legendData)
-      .enter()
-      .append('g')
+    const legend = vis.legend
+      .selectAll('.legend-item')
+      .data(vis.legendData, (d) => d)
+      .join((enter) => enter.append('g'))
       .attr('class', 'legend-item');
 
-    legendGroups
+    legend
       .append('rect')
       .attr('class', 'legend-icon')
       .attr('fill', (d, _) => {
@@ -158,7 +156,7 @@ class ChordDiagram {
         );
       });
 
-    legendGroups
+    legend
       .append('text')
       .attr('class', 'legend-label')
       .attr('x', (d, i) => {
@@ -175,6 +173,11 @@ class ChordDiagram {
         );
       })
       .text((d) => d);
+  }
+
+  renderVis() {
+    let vis = this;
+    const chordData = d3.chord().padAngle(0.05)(vis.matrix);
 
     // append chord nodes
     const chordNodeGroup = vis.chart
@@ -198,12 +201,20 @@ class ChordDiagram {
       if (vis.selectedActor === d.index + 1) {
         // unselect the selected actor
         vis.selectedActor = 0;
-        vis.dispatcher.call('filteredActorType', event, vis.selectedActor);
+        vis.dispatcher.call(
+          'filteredActorTypeBubble',
+          event,
+          vis.selectedActor
+        );
         vis.updateVis();
       } else {
         // select a new actor
         vis.selectedActor = d.index + 1;
-        vis.dispatcher.call('filteredActorType', event, vis.selectedActor);
+        vis.dispatcher.call(
+          'filteredActorTypeBubble',
+          event,
+          vis.selectedActor
+        );
         vis.updateVis();
       }
     });
@@ -228,23 +239,10 @@ class ChordDiagram {
             data.INTER1 == d.source.index + 1 &&
             data.INTER2 == d.target.index + 1
         );
-        events.sort((a, b) => a.YEAR - b.YEAR);
-
-        // show the tooltip
-        d3.select('#chord-tooltip').style('display', 'block');
-
-        // append the bar chart to the tooltip
-        const barChart = new BarChart(
-          {
-            parentElement: '#chord-tooltip',
-          },
-          events
-        );
+        vis.dispatcher.call('filteredActorTypeBarChart', event, events);
       })
       .on('mouseleave', function () {
-        // show the tooltip
-        d3.select('#chord-tooltip').style('display', 'none');
-        d3.select('#chord-tooltip-svg').remove();
+        vis.dispatcher.call('filteredActorTypeBarChart', event, []);
       });
   }
 }

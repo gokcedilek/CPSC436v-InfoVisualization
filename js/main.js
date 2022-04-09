@@ -10,15 +10,22 @@ const violent_events = [
 const demonstration_events = ['Protests', 'Riots'];
 const non_violent_actions = ['Strategic developments'];
 
-const dispatcher = d3.dispatch('filteredInfoSourceEvent', 'filteredActorType');
+const dispatcher = d3.dispatch(
+  'filteredInfoSourceEvent',
+  'filteredActorTypeBubble',
+  'filteredActorTypeBarChart'
+);
 
 let chord;
+let barchart;
 let bubble_vio;
 let bubble_dem;
 let bubble_non;
 
-// d3.csv('data/data_removed_columns.csv')
-Promise.all([d3.csv('data/data_inter_fatalities.csv'), d3.json('data/world-110m.json')])
+Promise.all([
+  d3.csv('data/data_inter_fatalities.csv'),
+  d3.json('data/world-110m.json'),
+])
   .then((data) => {
     // Convert columns to numerical values
     data[0].forEach((d) => {
@@ -81,7 +88,12 @@ Promise.all([d3.csv('data/data_inter_fatalities.csv'), d3.json('data/world-110m.
       data[0],
       dispatcher
     );
-
+    barchart = new BarChart(
+      {
+        parentElement: '#bar-chart',
+      },
+      data[0]
+    );
     bubble_vio = new BubbleDiagram(
       {
         parentElement: '#bubble-diagram-violent_events',
@@ -105,33 +117,35 @@ Promise.all([d3.csv('data/data_inter_fatalities.csv'), d3.json('data/world-110m.
     );
 
     d3.select('#time-slider').on('input', function () {
-        let filtered = data[0];
-        let year = + this.value
-        
-        d3.select('#time-value').text(year);
-        filtered = data[0].filter((d) => d['YEAR'] <= year);
+      let filtered = data[0];
+      let year = +this.value;
 
-        symbolMap.data = filtered;
-        symbolMap.updateVis();
+      d3.select('#time-value').text(year);
+      filtered = data[0].filter((d) => d['YEAR'] <= year);
 
-        chord.data = filtered;
-        chord.updateVis();
+      symbolMap.data = filtered;
+      symbolMap.updateVis();
 
-        bubble_vio.data = filtered.filter(
-            (d) => d['GENERAL_EVENT_GROUP'] == 'violent_events'
-          );
-          bubble_vio.updateVis();
-  
-          bubble_dem.data = filtered.filter(
-            (d) => d['GENERAL_EVENT_GROUP'] == 'demonstration_events'
-          );
-          bubble_dem.updateVis();
-  
-          bubble_non.data = filtered.filter(
-            (d) => d['GENERAL_EVENT_GROUP'] == 'non_violent_actions'
-          );
-          bubble_non.updateVis();
+      chord.data = filtered;
+      chord.updateVis();
 
+      barchart.data = filtered;
+      barchart.updateVis();
+
+      bubble_vio.data = filtered.filter(
+        (d) => d['GENERAL_EVENT_GROUP'] == 'violent_events'
+      );
+      bubble_vio.updateVis();
+
+      bubble_dem.data = filtered.filter(
+        (d) => d['GENERAL_EVENT_GROUP'] == 'demonstration_events'
+      );
+      bubble_dem.updateVis();
+
+      bubble_non.data = filtered.filter(
+        (d) => d['GENERAL_EVENT_GROUP'] == 'non_violent_actions'
+      );
+      bubble_non.updateVis();
     });
 
     d3.select('#country-selector').on('change', function () {
@@ -149,6 +163,9 @@ Promise.all([d3.csv('data/data_inter_fatalities.csv'), d3.json('data/world-110m.
         chord.data = filtered;
         chord.updateVis();
 
+        barchart.data = filtered;
+        barchart.updateVis();
+
         bubble_vio.data = filtered.filter(
           (d) => d['GENERAL_EVENT_GROUP'] == 'violent_events'
         );
@@ -165,23 +182,34 @@ Promise.all([d3.csv('data/data_inter_fatalities.csv'), d3.json('data/world-110m.
         bubble_non.updateVis();
       }
     });
+
+    dispatcher.on(
+      'filteredInfoSourceEvent',
+      (selectedEvents, selectedInfoSource) => {
+        chord.eventType = selectedEvents;
+        chord.sourceScale = selectedInfoSource;
+        chord.updateVis();
+      }
+    );
+
+    dispatcher.on('filteredActorTypeBubble', (selectedActor) => {
+      bubble_dem.selectedActor = selectedActor;
+      bubble_vio.selectedActor = selectedActor;
+      bubble_non.selectedActor = selectedActor;
+      bubble_dem.updateVis();
+      bubble_vio.updateVis();
+      bubble_non.updateVis();
+    });
+
+    dispatcher.on('filteredActorTypeBarChart', (events) => {
+      if (events.length === 0) {
+        console.log('setting all events: ', data[0]);
+        barchart.data = data[0];
+      } else {
+        console.log('setting filtered events: ', events);
+        barchart.data = events;
+      }
+      barchart.updateVis();
+    });
   })
   .catch((error) => console.error(error));
-
-dispatcher.on(
-  'filteredInfoSourceEvent',
-  (selectedEvents, selectedInfoSource) => {
-    chord.eventType = selectedEvents;
-    chord.sourceScale = selectedInfoSource;
-    chord.updateVis();
-  }
-);
-
-dispatcher.on('filteredActorType', (selectedActor) => {
-  bubble_dem.selectedActor = selectedActor;
-  bubble_vio.selectedActor = selectedActor;
-  bubble_non.selectedActor = selectedActor;
-  bubble_dem.updateVis();
-  bubble_vio.updateVis();
-  bubble_non.updateVis();
-});
