@@ -233,15 +233,33 @@ class ChordDiagram {
     // hover handler to show/hide a tooltip
     chordArcs
       .on('mouseover', function (event, d) {
+        // find the actors involved in the events
+        const actor1 = vis.interCodeMap[d.source.index + 1];
+        const actor2 = vis.interCodeMap[d.target.index + 1];
+
         // find the events that belong to this arc
-        const events = vis.filteredData.filter(
+        const arcEvents = vis.filteredData.filter(
           (data) =>
             data.INTER1 == d.source.index + 1 &&
             data.INTER2 == d.target.index + 1
         );
-        vis.dispatcher.call('filteredActorTypeBarChart', event, events);
+        // show tooltip
+        d3
+          .select('#chord-tooltip')
+          .style('display', 'block')
+          .style('left', event.pageX + vis.config.tooltipPadding + 'px')
+          .style('top', event.pageY + vis.config.tooltipPadding + 'px').html(`
+              
+              <div><i>${actor1}-${actor2}</i></div>
+              <div><i>Number of events: ${arcEvents.length}</i></div>
+            `);
+        // call dispatcher to update the bar chart
+        vis.dispatcher.call('filteredActorTypeBarChart', event, arcEvents);
       })
       .on('mouseleave', function () {
+        // hide tooltip
+        d3.select('#chord-tooltip').style('display', 'none');
+        // call dispatcher to update the bar chart
         vis.dispatcher.call('filteredActorTypeBarChart', event, []);
       });
   }
