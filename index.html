@@ -46,7 +46,7 @@
             </span>
           </div>
 
-          <div class="filter-container">
+          <!-- <div class="filter-container">
             <label for="time-slider"
               >Filter time: <span id="time-value">2022</span></label
             >
@@ -57,6 +57,10 @@
               max="2022"
               id="time-slider"
             />
+          </div> -->
+          <div class="row align-items-center">
+            <div class="col-sm-2"><p id="value-range"></p></div>
+            <div class="col-sm"><div id="slider-range"></div></div>
           </div>
           <svg id="symbol-map"></svg>
           <div class="description-container">
@@ -114,6 +118,7 @@
     <div id="barchart-tooltip"></div>
 
     <script src="js/d3.v6.min.js"></script>
+    <script src="js/d3-simple-slider.js"></script>
     <script src="https://unpkg.com/d3-v6-tip@1.0.6/build/d3-v6-tip.js"></script>
     <script src="js/topojson.js"></script>
     <script src="js/main.js"></script>
