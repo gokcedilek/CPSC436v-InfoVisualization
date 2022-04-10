@@ -67,10 +67,7 @@ Promise.all([
     });
 
     const timeSlider = new TimeSlider(
-      {
-        parentElement: '#time',
-      },
-      data[0]
+      {}, data[0]
     );
     const symbolMap = new SymbolMap(
       {

@@ -41,14 +41,11 @@ class SymbolMap {
           .translate([vis.width/2, vis.height/2]);  // ensure centered within svg group
       
       vis.geoPath = d3.geoPath().projection(vis.projection);
-      vis.symbolScale = d3.scaleSqrt()
-      .range([1, 1.2]);
       this.updateVis();
     }
   
     updateVis() {
       let vis = this;
-      // Prepare data and scales
       vis.dataLocation = d3.group(vis.data, d => d.LOCATION);
 
       this.renderVis();
@@ -57,7 +54,6 @@ class SymbolMap {
   
     renderVis() {
       let vis = this;
-      // Bind data to visual elements, update axes
       // Convert compressed TopoJSON to GeoJSON format
       const geoPath = vis.chart.selectAll('.geo-path')
           .data(topojson.feature(vis.geoData, vis.geoData.objects.countries).features)
