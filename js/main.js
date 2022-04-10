@@ -10,9 +10,7 @@ const violent_events = [
 const demonstration_events = ['Protests', 'Riots'];
 const non_violent_actions = ['Strategic developments'];
 
-
-
-const dispatcher = d3.dispatch('filteredInfoSourceEvent', 'filteredActorTypeBarChart', 'filteredActorTypeBubble', 'updateYear', 'updateData');
+const dispatcher = d3.dispatch('filteredInfoSourceEvent', 'filteredActorTypeBarChart', 'filteredActorTypeBubble', 'updateYear');
 
 let chord;
 let barchart;

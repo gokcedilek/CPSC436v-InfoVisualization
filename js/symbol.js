@@ -50,34 +50,7 @@ class SymbolMap {
       let vis = this;
       // Prepare data and scales
       vis.dataLocation = d3.group(vis.data, d => d.LOCATION);
-      vis.dataCountryLocation = d3.group(vis.data, d => d.COUNTRY);
-      // console.log(vis.dataCountryLocation);
-      const lats = new Map();
-      const longs = new Map();
-      vis.dataCountryLocation.forEach((d) => {
-        lats.set(d[0].COUNTRY, d[0].LATITUDE)
-        longs.set(d[0].COUNTRY, d[0].LONGITUDE)
-      })
-      // Making things more centered within a country
-      // lats.set('Iran', 37);
-      // longs.set('Iran', 58);
 
-      longs.set('Turkey', 36);
-
-      // lats.set('Oman', 19.5);
-      // longs.set('Oman', 56);
-
-      // lats.set('United Arab Emirates', 23.5);
-      // longs.set('United Arab Emirates', 54.5);
-
-      lats.set('Saudi Arabia', 20);
-      longs.set('Saudi Arabia', 43);
-
-      lats.set('Syria', 36.9);
-      longs.set('Syria', 40.8);
-
-      vis.lats = lats;
-      vis.longs = longs;
       this.renderVis();
       
     }
@@ -104,14 +77,9 @@ class SymbolMap {
       .data(vis.dataLocation)
       .join('circle')
         .attr('class', 'geo-symbol')
-        .attr('r', 1.5)//d => vis.symbolScale(d[1].length))
+        .attr('r', 1.5)
         // d is [[location name, [array of events that happened in that location]], ...]
         // d[1][0] = the first event in that location
-        // .attr('cx', d => {
-        //     // console.log(vis.lats.get(d[0]))
-        //     // return vis.projection(vis.longs.get(d[0]),vis.lats.get(d[0]))[0]
-        //     return vis.projection([vis.longs.get(d[0]),vis.lats.get(d[0])])[0]
-        // })
         .attr('cx', d => vis.projection([d[1][0].LONGITUDE,d[1][0].LATITUDE])[0])
         .attr('cy', d => vis.projection([d[1][0].LONGITUDE,d[1][0].LATITUDE])[1]);
 

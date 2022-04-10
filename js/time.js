@@ -25,7 +25,6 @@ class TimeSlider {
 
         const years = d3.group(vis.data, d => d.YEAR)
         let data =[ ...years.keys() ]; // https://stackoverflow.com/questions/35341696/how-to-convert-map-keys-to-array
-        console.log(data)
             
         const sliderRange = d3
         .sliderBottom()
