@@ -9,16 +9,42 @@
   <body>
     <h1>Political Violence in the Middle East</h1>
 
-    <br />
-
-    <br />
 
     <div class="container">
       <div class="container-columns">
         <div class="container-column bubble-column">
+          <h3>Violent events</h3>
           <svg id="bubble-diagram-violent_events"></svg>
+          <h3>Demonstration events</h3>
           <svg id="bubble-diagram-demonstration_events"></svg>
+          <h3>Non-violent actions</h3>
           <svg id="bubble-diagram-non_violent_actions"></svg>
+        </div>
+        <div class="legend">
+          <h4>Media reporting the event</h4>
+          <ul>
+            <li class="legend-btn" source="international">
+              <span class="legend-symbol"></span>International
+            </li>
+            <li class="legend-btn" source="national">
+              <span class="legend-symbol"></span>National
+            </li>
+            <li class="legend-btn" source="subnational">
+              <span class="legend-symbol"></span>Subnational
+            </li>
+            <li class="legend-btn" source="regional">
+              <span class="legend-symbol"></span>Regional
+            </li>
+            <li class="legend-btn" source="localPartner">
+              <span class="legend-symbol"></span>Local partner
+            </li>
+            <li class="legend-btn" source="newMedia">
+              <span class="legend-symbol"></span>New media
+            </li>
+            <li class="legend-btn" source="other">
+              <span class="legend-symbol"></span>Other
+            </li>
+          </ul>
         </div>
         <div class="container-column map-column">
           <div class="filter-container">
@@ -82,31 +108,7 @@
         </div>
       </div>
 
-      <div class="legend">
-        <ul>
-          <li class="legend-btn" source="international">
-            <span class="legend-symbol"></span>International
-          </li>
-          <li class="legend-btn" source="national">
-            <span class="legend-symbol"></span>National
-          </li>
-          <li class="legend-btn" source="subnational">
-            <span class="legend-symbol"></span>Subnational
-          </li>
-          <li class="legend-btn" source="regional">
-            <span class="legend-symbol"></span>Regional
-          </li>
-          <li class="legend-btn" source="localPartner">
-            <span class="legend-symbol"></span>Local partner
-          </li>
-          <li class="legend-btn" source="newMedia">
-            <span class="legend-symbol"></span>New media
-          </li>
-          <li class="legend-btn" source="other">
-            <span class="legend-symbol"></span>Other
-          </li>
-        </ul>
-      </div>
+
     </div>
 
     <div id="bubble-tooltip"></div>
