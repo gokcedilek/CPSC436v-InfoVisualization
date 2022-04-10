@@ -2,9 +2,9 @@ class BarChart {
   constructor(_config, _data) {
     this.config = {
       parentElement: _config.parentElement,
-      containerWidth: 300,
+      containerWidth: 450,
       containerHeight: 250,
-      margin: { top: 20, right: 30, bottom: 20, left: 50 },
+      margin: { top: 20, right: 30, bottom: 20, left: 100 },
       tooltipPadding: 5,
       textPadding: 1,
     };
@@ -14,21 +14,6 @@ class BarChart {
 
   initVis() {
     let vis = this;
-
-    // append SVG drawing area
-    const tooltipSVG = d3
-      .select(vis.config.parentElement)
-      .append('svg')
-      .attr('id', 'chord-tooltip-svg')
-      .attr('width', vis.config.containerWidth)
-      .attr('height', vis.config.containerHeight);
-
-    vis.tooltipSVGChart = tooltipSVG
-      .append('g')
-      .attr(
-        'transform',
-        `translate(${vis.config.margin.left},${vis.config.margin.top})`
-      );
 
     // define chart dimensions
     vis.width =
@@ -40,23 +25,64 @@ class BarChart {
       vis.config.margin.top -
       vis.config.margin.bottom;
 
+    // define SVG drawing area
+    vis.svg = d3
+      .select(vis.config.parentElement)
+      .attr('width', vis.config.containerWidth)
+      .attr('height', vis.config.containerHeight);
+
+    vis.chart = vis.svg
+      .append('g')
+      .attr(
+        'transform',
+        `translate(${vis.config.margin.left},${vis.config.margin.top})`
+      );
+
     // add chart titles
-    tooltipSVG
+    vis.svg
       .append('text')
       .attr('class', 'axis-title')
-      .attr('x', 4)
+      .attr('x', vis.config.margin.left - vis.config.margin.right)
       .attr('y', 4)
       .attr('dy', '.71em')
       .text('Fatalities (sum)');
 
-    vis.tooltipSVGChart
+    vis.chart
       .append('text')
       .attr('class', 'axis-title')
-      .attr('y', vis.height - 10)
-      .attr('x', vis.width + 30)
+      .attr('y', vis.height - 5)
+      .attr('x', vis.width + 25)
       .attr('dy', '.71em')
       .style('text-anchor', 'end')
       .text('Year');
+
+    // define scales and axes
+    vis.yAxisScale = d3.scaleLinear().range([vis.height, 0]);
+    vis.xAxisScale = d3.scaleBand().range([0, vis.width]).padding(0.1);
+    vis.yAxis = d3
+      .axisLeft(vis.yAxisScale)
+      .ticks(5)
+      .tickFormat((t) => t)
+      .tickSizeOuter(0)
+      .tickPadding(5);
+    vis.xAxis = d3.axisBottom(vis.xAxisScale).tickSizeOuter(0).tickPadding(3);
+
+    // define axis groups
+    vis.xAxisGroup = vis.chart
+      .append('g')
+      .attr('class', 'axis x-axis')
+      .attr('transform', `translate(0, ${vis.height})`);
+
+    vis.yAxisGroup = vis.chart.append('g').attr('class', 'axis y-axis');
+
+    vis.updateVis();
+  }
+
+  updateVis() {
+    let vis = this;
+
+    // sort events by year
+    vis.data.sort((a, b) => a.YEAR - b.YEAR);
 
     // compute number of fatalities by year
     vis.fatalitiesPerYear = d3.rollups(
@@ -86,37 +112,10 @@ class BarChart {
     );
     const numYears = maxYear - minYear + 1;
 
-    // define scales and axes
-    vis.yAxisScale = d3
-      .scaleLinear()
-      .domain([0, maxFatalities])
-      .range([vis.height, 0]);
-    vis.xAxisScale = d3
-      .scaleBand()
-      .domain(vis.fatalitiesPerYear.map((d) => d.year))
-      .range([0, vis.width])
-      .padding(0.1);
-    vis.yAxis = d3
-      .axisLeft(vis.yAxisScale)
-      .ticks(5)
-      .tickFormat((t) => t)
-      .tickSizeOuter(0)
-      .tickPadding(5);
-    vis.xAxis = d3
-      .axisBottom(vis.xAxisScale)
-      .ticks(numYears)
-      .tickSizeOuter(0)
-      .tickPadding(3);
-
-    // define axis groups
-    vis.xAxisGroup = vis.tooltipSVGChart
-      .append('g')
-      .attr('class', 'axis x-axis')
-      .attr('transform', `translate(0, ${vis.height})`);
-
-    vis.yAxisGroup = vis.tooltipSVGChart
-      .append('g')
-      .attr('class', 'axis y-axis');
+    // set dynamic axis and scale properties
+    vis.yAxisScale.domain([0, maxFatalities]);
+    vis.xAxisScale.domain(vis.fatalitiesPerYear.map((d) => d.year));
+    vis.xAxis.ticks(numYears);
 
     vis.renderVis();
   }
@@ -125,7 +124,7 @@ class BarChart {
     let vis = this;
 
     // append bar groups
-    const barGroups = vis.tooltipSVGChart
+    const barGroups = vis.chart
       .selectAll('.bar-group')
       .data(vis.fatalitiesPerYear)
       .join('g')

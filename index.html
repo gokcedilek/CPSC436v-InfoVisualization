@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <h1 style="text-align: center">Political Violence in the Middle East</h1>
+    <h1>Political Violence in the Middle East</h1>
 
 
     <div class="container">
       <div class="container-columns">
-        <div id="info-source" class="container-column">
+        <div class="container-column bubble-column">
           <h3>Violent events</h3>
           <svg id="bubble-diagram-violent_events"></svg>
           <h3>Demonstration events</h3>
@@ -21,7 +21,7 @@
           <svg id="bubble-diagram-non_violent_actions"></svg>
         </div>
         <div class="legend">
-          <h4>Information source</h4>
+          <h4>Media reporting the event</h4>
           <ul>
             <li class="legend-btn" source="international">
               <span class="legend-symbol"></span>International
@@ -102,8 +102,8 @@
             </div>
           </div>
         </div>
-        <div class="container-column bubble-column">
-          <div id="chord-tooltip"></div>
+        <div class="container-column chord-column">
+          <svg id="bar-chart"></svg>
           <svg id="chord-diagram"></svg>
         </div>
       </div>
@@ -111,7 +111,7 @@
 
     </div>
 
-    <div id="tooltip"></div>
+    <div id="bubble-tooltip"></div>
     <div id="symbol-tooltip"></div>
     <div id="barchart-tooltip"></div>
 
