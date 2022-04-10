@@ -59,24 +59,24 @@ class ChordDiagram {
       .attr('width', vis.config.containerWidth)
       .attr('height', vis.config.containerHeight);
 
-    vis.chart = vis.svg.append('g').attr('transform', 'translate(250,250)');
+    vis.chart = vis.svg.append('g').attr('transform', `translate(250,250)`);
 
     // define chord legend
-    vis.legend = vis.svg.append('g').attr('transform', 'translate(70, 460)');
+    vis.legend = vis.svg.append('g').attr('transform', `translate(70, 460)`);
     vis.legendData = Object.values(vis.interCodeMap);
 
     // define chord color scale
     vis.colorScale = d3
       .scaleOrdinal()
       .range([
-        '#fc928b',
-        '#07a822',
-        '#5276f7',
-        '#ae94d4',
-        '#dbaa09',
-        '#b0b305',
-        '#f3b6fa',
-        '#48a4f0',
+        '#b5a5d5',
+        '#ffa3b1',
+        '#e5aa7a',
+        '#f5e49c',
+        '#546d8e',
+        '#d3f9bc',
+        '#9dbb61',
+        '#99d9ea',
       ])
       .domain([0, 7]);
 
