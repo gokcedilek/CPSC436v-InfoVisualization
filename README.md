@@ -7,5 +7,5 @@ The detailed dataset description can be found [here](https://acleddata.com/acled
 Our project visualizes political events in the Middle East from 2015-2022. Users can use this visualization to obtain various information such as what events are covered by various media sources, where violent events occur, who is involved, and number of fatalities in the events. 
 
 ## Running the project
-`http-server -p 8080`
-`python -m http.server 8080`
+Using npm package `http-server -p 8080`  
+Using python `python -m http.server 8080`
