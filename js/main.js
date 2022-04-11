@@ -169,10 +169,8 @@ Promise.all([
 
     dispatcher.on('filteredActorTypeBarChart', (events) => {
       if (events.length === 0) {
-        console.log('setting all events: ', data[0]);
         barchart.data = data[0];
       } else {
-        console.log('setting filtered events: ', events);
         barchart.data = events;
       }
       barchart.updateVis();
