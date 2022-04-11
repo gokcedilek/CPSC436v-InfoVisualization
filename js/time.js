@@ -37,7 +37,7 @@ class TimeSlider {
         .fill('#2196f3')
         .on('onchange', (val) => {
           dispatcher.call('updateYear', {}, val);
-          d3.select('p#value-range').text(val.map(d3.format('d')).join('-'));
+          d3.select('p#value-range').text("Years: " + val.map(d3.format('d')).join('-'));
         });
     
       const gRange = d3
@@ -51,6 +51,7 @@ class TimeSlider {
       gRange.call(sliderRange);
     
       d3.select('p#value-range').text(
+        "Years: " + 
         sliderRange
           .value()
           .map(d3.format('d'))
