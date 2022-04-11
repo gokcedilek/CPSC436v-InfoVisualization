@@ -8,3 +8,4 @@ Our project visualizes political events in the Middle East from 2015-2022. Users
 
 ## Running the project
 `http-server -p 8080`
+`python -m http.server 8080`
