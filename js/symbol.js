@@ -41,24 +41,19 @@ class SymbolMap {
           .translate([vis.width/2, vis.height/2]);  // ensure centered within svg group
       
       vis.geoPath = d3.geoPath().projection(vis.projection);
-      vis.symbolScale = d3.scaleSqrt()
-      .range([1, 2]);
       this.updateVis();
     }
   
     updateVis() {
       let vis = this;
-      // Prepare data and scales
       vis.dataLocation = d3.group(vis.data, d => d.LOCATION);
 
-      
       this.renderVis();
       
     }
   
     renderVis() {
       let vis = this;
-      // Bind data to visual elements, update axes
       // Convert compressed TopoJSON to GeoJSON format
       const geoPath = vis.chart.selectAll('.geo-path')
           .data(topojson.feature(vis.geoData, vis.geoData.objects.countries).features)
@@ -78,14 +73,14 @@ class SymbolMap {
       .data(vis.dataLocation)
       .join('circle')
         .attr('class', 'geo-symbol')
-        .attr('r', d => vis.symbolScale(d[1].length))
+        .attr('r', 1.5)
         // d is [[location name, [array of events that happened in that location]], ...]
         // d[1][0] = the first event in that location
         .attr('cx', d => vis.projection([d[1][0].LONGITUDE,d[1][0].LATITUDE])[0])
         .attr('cy', d => vis.projection([d[1][0].LONGITUDE,d[1][0].LATITUDE])[1]);
 
 
-      // // Tooltip event listeners
+      // Tooltip event listeners
       geoSymbols
           .on('mousemove', (event, d) => {
             d3.select('#symbol-tooltip')

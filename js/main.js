@@ -10,17 +10,15 @@ const violent_events = [
 const demonstration_events = ['Protests', 'Riots'];
 const non_violent_actions = ['Strategic developments'];
 
-const dispatcher = d3.dispatch(
-  'filteredInfoSourceEvent',
-  'filteredActorTypeBubble',
-  'filteredActorTypeBarChart'
-);
+const dispatcher = d3.dispatch('filteredInfoSourceEvent', 'filteredActorTypeBarChart', 'filteredActorTypeBubble', 'updateYear');
 
 let chord;
 let barchart;
 let bubble_vio;
 let bubble_dem;
 let bubble_non;
+let countries = 'All';
+let years_data = [0, 3000];
 
 Promise.all([
   d3.csv('data/data_inter_fatalities.csv'),
@@ -69,10 +67,7 @@ Promise.all([
     });
 
     const timeSlider = new TimeSlider(
-      {
-        parentElement: '#time-slider',
-      },
-      data[0]
+      {}, data[0]
     );
     const symbolMap = new SymbolMap(
       {
@@ -116,41 +111,12 @@ Promise.all([
       data[0]
     );
 
-    d3.select('#time-slider').on('input', function () {
-      let filtered = data[0];
-      let year = +this.value;
-
-      d3.select('#time-value').text(year);
-      filtered = data[0].filter((d) => d['YEAR'] <= year);
-
-      symbolMap.data = filtered;
-      symbolMap.updateVis();
-
-      chord.data = filtered;
-      chord.updateVis();
-
-      barchart.data = filtered;
-      barchart.updateVis();
-
-      bubble_vio.data = filtered.filter(
-        (d) => d['GENERAL_EVENT_GROUP'] == 'violent_events'
-      );
-      bubble_vio.updateVis();
-
-      bubble_dem.data = filtered.filter(
-        (d) => d['GENERAL_EVENT_GROUP'] == 'demonstration_events'
-      );
-      bubble_dem.updateVis();
-
-      bubble_non.data = filtered.filter(
-        (d) => d['GENERAL_EVENT_GROUP'] == 'non_violent_actions'
-      );
-      bubble_non.updateVis();
-    });
-
     d3.select('#country-selector').on('change', function () {
       let selected = d3.select(this).property('value');
-      let filtered = data[0];
+      let start = Math.floor(years_data[0])
+      let end = Math.floor(years_data[1])
+      countries = selected;
+      let filtered = data[0].filter((d) =>d['YEAR'] >= start && d['YEAR'] <= end);
 
       if (selected) {
         if (selected != 'All') {
@@ -211,5 +177,45 @@ Promise.all([
       }
       barchart.updateVis();
     });
+
+    dispatcher.on('updateYear', (years) => {
+      years_data = years
+      let filtered = data[0];
+      let start = Math.floor(years[0])
+      let end = Math.floor(years[1])
+      filtered = data[0].filter((d) => {
+        let inYear =  d['YEAR'] >= start && d['YEAR'] <= end;
+        let inCountry = true;
+        if (countries != 'All') {
+          inCountry = (d['COUNTRY'] == countries);
+        }
+        return inYear && inCountry
+      });
+
+      symbolMap.data = filtered;
+      symbolMap.updateVis();
+
+      chord.data = filtered;
+        chord.updateVis();
+
+        barchart.data = filtered;
+        barchart.updateVis();
+
+        bubble_vio.data = filtered.filter(
+          (d) => d['GENERAL_EVENT_GROUP'] == 'violent_events'
+        );
+        bubble_vio.updateVis();
+
+        bubble_dem.data = filtered.filter(
+          (d) => d['GENERAL_EVENT_GROUP'] == 'demonstration_events'
+        );
+        bubble_dem.updateVis();
+
+        bubble_non.data = filtered.filter(
+          (d) => d['GENERAL_EVENT_GROUP'] == 'non_violent_actions'
+        );
+        bubble_non.updateVis();
+      }
+    );
   })
   .catch((error) => console.error(error));

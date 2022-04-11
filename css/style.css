@@ -134,7 +134,7 @@ svg#symbol-map {
 }
 
 .geo-path {
-  fill: lightskyblue;
+  fill: grey;
 }
 .geo-boundary-path {
   stroke: #fff;
@@ -142,7 +142,7 @@ svg#symbol-map {
   stroke-width: 0.4;
 }
 .geo-symbol {
-  fill: #3e5e79;
+  fill: red;
   fill-opacity: 0.5;
 }
 .geo-symbol:hover {
