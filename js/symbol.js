@@ -10,7 +10,7 @@ class SymbolMap {
       parentElement: _config.parentElement,
       containerWidth: 500,
       containerHeight: 350,
-      margin: {top: 30, right: 30, bottom: 30, left: 30},
+      margin: {top: 10, right: 30, bottom: 30, left: 30},
       tooltipPadding: 10,
       projection: d3.geoConicConformal()
     }

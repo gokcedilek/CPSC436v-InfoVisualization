@@ -7,8 +7,8 @@ class ChordDiagram {
   constructor(_config, _data, _dispatcher) {
     this.config = {
       parentElement: _config.parentElement,
-      containerWidth: 900,
-      containerHeight: 600,
+      containerWidth: 400,
+      containerHeight: 500,
       margin: { top: 30, right: 30, bottom: 30, left: 30 },
       tooltipPadding: 5,
       legendWidth: 210,
@@ -59,10 +59,10 @@ class ChordDiagram {
       .attr('width', vis.config.containerWidth)
       .attr('height', vis.config.containerHeight);
 
-    vis.chart = vis.svg.append('g').attr('transform', `translate(250,250)`);
+    vis.chart = vis.svg.append('g').attr('transform', `translate(200,200) scale(0.65)`);
 
     // define chord legend
-    vis.legend = vis.svg.append('g').attr('transform', `translate(70, 460)`);
+    vis.legend = vis.svg.append('g').attr('transform', `translate(0, 350)`);
     vis.legendData = Object.values(vis.interCodeMap);
 
     // define chord color scale
