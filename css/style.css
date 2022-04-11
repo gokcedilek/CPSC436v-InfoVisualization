@@ -11,6 +11,12 @@ h3{
   text-align: center;
 }
 
+p{
+  margin: 0px;
+  margin-block-start: 0em;
+  margin-block-end: 0em;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -22,9 +28,13 @@ h3{
 }
 
 .bubble-column {
+  margin-top: -25px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
+
 
 .map-column {
   display: flex;
@@ -32,7 +42,7 @@ h3{
 }
 
 .chord-column {
-  margin-top: -35px;
+  margin-top: -15px;
 }
 
 .filter-container {
@@ -45,6 +55,14 @@ h3{
 }
 
 /* bubble */
+.bubble-container {
+  margin-top: -70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 #bubble-tooltip {
   position: absolute;
   display: none;
@@ -63,7 +81,7 @@ h3{
   stroke-width: 4px;
 }
 .legend {
-  margin-top: 5%;
+  margin-top: 20%;
   margin-left: 5px;
   list-style: none;
   padding: 0;
@@ -121,6 +139,7 @@ ul {
 /* symbol map */
 svg#symbol-map {
   margin: 20px;
+  margin-top: -10px;
 }
 
 #symbol-tooltip {
@@ -173,7 +192,15 @@ svg#chord-diagram {
   min-width: 180px;
 }
 
+.legend-label {
+  font-size: 11px;
+}
+
 /* bar chart */
+#bar-chart{
+  margin-bottom: 30px;
+}
+
 text.bar-label {
   font-size: 10px !important;
 }
@@ -183,4 +210,18 @@ text.bar-label {
   font-size: 11px;
 }
 
+/* time slider */
+.col-sm-2 {
+  width: 50%;
+  display: inline-block;
+}
 
+#value-range {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  display: inline-block;
+}
+
+#slider-range {
+  display: inline-block;
+}

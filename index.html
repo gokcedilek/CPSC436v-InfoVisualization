@@ -7,44 +7,50 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <h1>Political Violence in the Middle East</h1>
-
+    <h1 style="text-align: center">Political Violence in the Middle East</h1>
+    <br>
 
     <div class="container">
       <div class="container-columns">
         <div class="container-column bubble-column">
+          <div class="bubble-container">
+            <p class="description">
+            Click on a bubble in the bubble diagram to filter the chord
+            diagram by event type and source type!
+          </p>
+          <br>
           <h3>Violent events</h3>
           <svg id="bubble-diagram-violent_events"></svg>
           <h3>Demonstration events</h3>
           <svg id="bubble-diagram-demonstration_events"></svg>
           <h3>Non-violent actions</h3>
-          <svg id="bubble-diagram-non_violent_actions"></svg>
-        </div>
-        <div class="legend">
-          <h4>Media reporting the event</h4>
-          <ul>
-            <li class="legend-btn" source="international">
-              <span class="legend-symbol"></span>International
-            </li>
-            <li class="legend-btn" source="national">
-              <span class="legend-symbol"></span>National
-            </li>
-            <li class="legend-btn" source="subnational">
-              <span class="legend-symbol"></span>Subnational
-            </li>
-            <li class="legend-btn" source="regional">
-              <span class="legend-symbol"></span>Regional
-            </li>
-            <li class="legend-btn" source="localPartner">
-              <span class="legend-symbol"></span>Local partner
-            </li>
-            <li class="legend-btn" source="newMedia">
-              <span class="legend-symbol"></span>New media
-            </li>
-            <li class="legend-btn" source="other">
-              <span class="legend-symbol"></span>Other
-            </li>
-          </ul>
+          <svg id="bubble-diagram-non_violent_actions"></svg></div>
+          <div class="legend">
+            <h4>Media reporting the event</h4>
+            <ul>
+              <li class="legend-btn" source="international">
+                <span class="legend-symbol"></span>International
+              </li>
+              <li class="legend-btn" source="national">
+                <span class="legend-symbol"></span>National
+              </li>
+              <li class="legend-btn" source="subnational">
+                <span class="legend-symbol"></span>Subnational
+              </li>
+              <li class="legend-btn" source="regional">
+                <span class="legend-symbol"></span>Regional
+              </li>
+              <li class="legend-btn" source="localPartner">
+                <span class="legend-symbol"></span>Local partner
+              </li>
+              <li class="legend-btn" source="newMedia">
+                <span class="legend-symbol"></span>New media
+              </li>
+              <li class="legend-btn" source="other">
+                <span class="legend-symbol"></span>Other
+              </li>
+            </ul>
+          </div>
         </div>
         <div class="container-column map-column">
           <div class="filter-container">
@@ -71,31 +77,25 @@
               </select>
             </span>
             <div class="row align-items-center">
-              <div class="col-sm-2"><p id="value-range"></p></div>
-              <div class="col-sm"><div id="slider-range"></div></div>
+              <div class="col-sm-2">
+                <p id="value-range"></p>
+                <div id="slider-range"></div>
+              </div>
             </div>
           </div>
           
           <svg id="symbol-map"></svg>
           <div class="description-container">
-            <div>
-              <span class="description-arrow">&#8592;</span>
-              <p class="description">
-                Click on a bubble in the bubble diagram to filter the chord
-                diagram by event type and source type!
-              </p>
-            </div>
-            <div>
-              <span class="description-arrow">&#8594;</span>
-              <p class="description">
-                Click on a segment in the chord diagram to filter the bubble
-                diagram by event actor!
-              </p>
-            </div>
           </div>
         </div>
         <div class="container-column chord-column">
           <svg id="bar-chart"></svg>
+          <div>
+            <p class="description">
+              Click on a segment in the chord diagram to filter the bubble
+              diagram by event actor!
+            </p>
+          </div>
           <svg id="chord-diagram"></svg>
         </div>
       </div>

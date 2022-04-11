@@ -9,7 +9,7 @@ class TimeSlider {
       this.config = {
         parentElement: _config.parentElement,
         containerWidth: 1000,
-        containerHeight: 50,
+        containerHeight: 30,
         margin: {top: 30, right: 30, bottom: 30, left: 30},
         tooltipPadding: 10
       }
@@ -37,7 +37,7 @@ class TimeSlider {
         .fill('#2196f3')
         .on('onchange', (val) => {
           dispatcher.call('updateYear', {}, val);
-          d3.select('p#value-range').text("Years: " + val.map(d3.format('d')).join('-'));
+          d3.select('p#value-range').text("Years: ");// + val.map(d3.format('d')).join('-'));
         });
     
       const gRange = d3
@@ -51,11 +51,11 @@ class TimeSlider {
       gRange.call(sliderRange);
     
       d3.select('p#value-range').text(
-        "Years: " + 
-        sliderRange
-          .value()
-          .map(d3.format('d'))
-          .join('-')
+        "Years: " // + 
+        // sliderRange
+        //   .value()
+        //   .map(d3.format('d'))
+        //   .join('-')
       );
       }
     
